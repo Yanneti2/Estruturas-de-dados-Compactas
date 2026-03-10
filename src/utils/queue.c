@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// A linked list queue implementation
+
 typedef struct node{
     int valor;
     struct node* next;

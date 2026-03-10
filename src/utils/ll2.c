@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// A Double Linked List Implementation
+
 typedef struct node{
     long valor;
     struct node* next;

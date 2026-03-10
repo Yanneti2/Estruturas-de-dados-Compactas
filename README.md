@@ -1,9 +1,10 @@
 # Estruturas-de-dados-Compactas
 
-    Um estudo dirigido realizado na Universidade Estadual de Campinas acerca de estruturas-de-dados compactas, ministrado pelo professor Guilherme P. Telles e que possui como referencia basica o livro:
+    Com o crescimento do volume de dados processados em nosso cotidiano, surge a necessidade de analisar estruturas-de-dados que, sejam satisfatorias na relacao compressiblidade-acessiblidade e capazes de, simultaneamente,  gastarem o menos de memoria possivel e serem eficientes no que tange o tempo de processamento.
 
-Gonzalo Navarro, Compact Data Structures – A practical approach, Cambridge University
+    Dai nasce o conceito de "estruturas-de-dados compactas", objeto de estudo dirigido realizado na Universidade Estadual de Campinas, ministrado pelo professor Guilherme P. Telles e que possui como referencia basica o livro:
 
-Press, 2016;
+    Gonzalo Navarro, Compact Data Structures – A practical approach, 		Cambridge University
+	Press, 2016;
 
 alem de artigos dos trabalhos originais citados nesse livro e artigos publicados mais recentemente no tema.

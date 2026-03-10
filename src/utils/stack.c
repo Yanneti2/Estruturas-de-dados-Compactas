@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// A linked list implementation of a stack
+
 typedef struct node{
     int valor;
     struct node* next;

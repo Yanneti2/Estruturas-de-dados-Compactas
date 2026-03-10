@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// the start of a Depth First Search for a Tree 
+
 typedef struct node{
     struct node* left;
     struct node* right;

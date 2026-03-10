@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// A Single Linked List Implementation
+
 typedef struct no{ // no creates a temporary buffer that makes so the next commented line gets interpreted by the compiler
     int data; // tipo de valor armazenado em no
     struct no* next; // this line makes so the next is created
