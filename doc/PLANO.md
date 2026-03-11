@@ -4,7 +4,6 @@ Navarro:
 
 * [ ] chapter 2;
 * [ ] chapter 4;
-
 * [ ] chapter 8;
 * [ ] chapter 12;
 
