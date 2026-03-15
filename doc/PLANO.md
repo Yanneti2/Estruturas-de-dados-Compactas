@@ -14,7 +14,8 @@ Jacobson:
 
 (11/03/2026 meeting):
 
-* [ ] Huffman's algorithm (C2) and Bitvectors (C4);
+* [X] Huffman's algorithm (C2);
+* [ ] Bitvectors (C4);
 * [ ] Ranking and Select operations in O(1) RRR;
 
   Future:
