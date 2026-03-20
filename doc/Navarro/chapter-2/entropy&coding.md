@@ -1,10 +1,34 @@
-https://www.alexbowe.com/rrr/
+# Types of Entropy
 
-The most basic notion of entropy is that it is the minimum number of bits required by identifiers, called codes.
+The most basic notion of entropy is that it is the minimum number of bits required by identifiers, called codes C(n). One type of entropy, called **Shannon Entropy**, assumes there is a source with u elements, each with known probabilities P(u). Using codes of len l(u) bits, we can assume the minimum possible average C(u) len with:
 
-codes??
+- **H**(**U**)**= **−**u**∈**U**∑P**(**u**)**log**2P**(**u**)
 
-Using 2n bits for large trees becomes asynmtotically optimal, for smal trees, the O(logn) factor is significant. Whereas the trees in "Genereal-Tree-Encode-2n-bits" become labeled as 000, 001, 010, 011 and 100.
+Considering l(u) = log2P(u):
+
+- **E**[**ℓ**(**u**)]**=**∑**P**(**u**)**ℓ**(**u**)
+
+The **Empiric Entropy**, on the other hand, shares the same objective as the Shannon, but its a aproximatly algorithm based on observed facts (u dont know the real probabilities). We use P(u) as frequency(u)/n, where n is the total number of cases/elements given by the source:
+
+- **H=**−*∑**P***(**u**)**lo**gP(**u**)
+
+It works as a valid aproximation of the real entropy.
+
+# Codes
+
+"The entropy tells us the minimum average code length we can achieve, and even sug-gests giving each symbolsa code with length log1Pr(s)to reach that optimum. To obtainkth-order entropy, we must use a different set of codes for each different previous con-text. However, in either case the entropy measure does not tell how to build a suitableset of codes."
+
+An encoding is said unambiguos if, there is no relation between the prefixes of the gives codes C(u) of a set of elements u ∈ U.
+
+    Ambiguos: C(u1) = 0, C(u2) = 1, C(u3) = 00.
+	Example: 000 => u1u1u1, or u3u1, or u1u3
+	Unambiguos: C(u1) = 0, C(u2) = 10, C(u3) = 11.
+
+(to see a unambiguos shannon encoding example, go to "scodes.png")
+
+Given a set of binary codes of lenght l(uk) each, to craft a set of unique and unabiguos codes (prefix freee) we can use the **Kraft-McMillan inequality,** so that is satisfies:
+
+- **∑2(**−**ℓ**(**u**)) ≤ 1
 
 # Huffman Codes
 
