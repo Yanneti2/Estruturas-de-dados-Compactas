@@ -2,10 +2,12 @@
 #define BITVECTOR
 
 // TODO: check system word size and use word size accordingly
-#if ((ULONG_MAX) == (UINT_MAX))
+#if INTPTR_MAX == INT64_MAX
+#define IS64BIT
+#elif INTPTR_MAX == INT32_MAX
 #define IS32BIT
 #else
-# define IS64BIT
+#error "Not a known processor"
 #endif
 
 #ifdef IS32BIT
@@ -19,9 +21,9 @@
 class bitVector {
   // TODO: *a should be unsigned long???
   private:
-      unsigned long* A;   // The bitvector itself
-      unsigned long cap;  // The number of words of A.
-      unsigned long len;  // The lenght of the bit sequence (logical). 
+      TYPE * A;   // The bitvector itself
+      TYPE cap;  // The number of words of A.
+      TYPE len;  // The lenght of the bit sequence (logical). 
       float ratio;        // The growing factor;
 
   public:

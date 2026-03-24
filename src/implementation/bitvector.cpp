@@ -11,18 +11,6 @@
 #include "bitvector.h"
 using namespace std;
 
-// uint32_t mask[] = {
-//   0xFFFFFFFFFFFFFFFF,0x7FFFFFFFFFFFFFFF,0x3FFFFFFFFFFFFFFF,0x1FFFFFFFFFFFFFFF,
-//   0x0FFFFFFFFFFFFFFF,0x07FFFFFFFFFFFFFF,0x03FFFFFFFFFFFFFF,0x01FFFFFFFFFFFFFF,
-//   0x00FFFFFFFFFFFFFF,0x007FFFFFFFFFFFFF,0x003FFFFFFFFFFFFF,0x001FFFFFFFFFFFFF,
-//   0x000FFFFFFFFFFFFF,0x0007FFFFFFFFFFFF,0x0003FFFFFFFFFFFF,0x0001FFFFFFFFFFFF,
-//   0x0000FFFFFFFFFFFF,0x00007FFFFFFFFFFF,0x00003FFFFFFFFFFF,0x00001FFFFFFFFFFF,
-//   0x00000FFFFFFFFFFF,0x000007FFFFFFFFFF,0x000003FFFFFFFFFF,0x000001FFFFFFFFFF,
-//   0x000000FFFFFFFFFF,0x0000007FFFFFFFFF,0x0000003FFFFFFFFF,0x0000001FFFFFFFFF,
-//   0x0000000FFFFFFFFF,0x00000007FFFFFFFF,0x00000003FFFFFFFF,0x00000001FFFFFFFF,
-//   0x00000000FFFFFFFF
-// }
-
 uint64_t mask[] = {
   0xFFFFFFFFFFFFFFFF,0x7FFFFFFFFFFFFFFF,0x3FFFFFFFFFFFFFFF,0x1FFFFFFFFFFFFFFF,
   0x0FFFFFFFFFFFFFFF,0x07FFFFFFFFFFFFFF,0x03FFFFFFFFFFFFFF,0x01FFFFFFFFFFFFFF,
@@ -55,7 +43,7 @@ uint64_t mask[] = {
 // Initializes a bitvector instance 
 bitVector::bitVector(unsigned long capacity, float growth_ratio) {
 
-    assert(sizeof(unsigned long) == 8);
+    assert(sizeof(TYPE) * 8 == NBITS);
 
     cap = (capacity == 0 ? 0 : (capacity+(NBITS-1))/NBITS);
     len = 0;
@@ -97,7 +85,7 @@ int bitVector::grow(unsigned long ncap) {
 **/
 void bitVector::set1(unsigned long i) {
 
-    A[i / 64] |= 0x8000000000000000 >> (i % 64);
+    A[i / NBITS] |= ((TYPE)1 << (NBITS - 1)) >> (i % NBITS);
 }
 
 /**
@@ -107,7 +95,7 @@ void bitVector::set1(unsigned long i) {
 **/
 void bitVector::set0(unsigned long i) {
 
-    A[i / 64] &= ~(0x8000000000000000 >> (i % 64));
+    A[i / NBITS] &= ~(((TYPE)1 << (NBITS - 1)) >> (i % NBITS));
 }
 
 /**
@@ -117,7 +105,7 @@ void bitVector::set0(unsigned long i) {
 **/
 int bitVector::access(unsigned long i) {
 
-    return (A[i / 64] & (0x8000000000000000 >> (i%64))) ? 1 : 0;
+    return (A[i / NBITS] & (((TYPE)1 << (NBITS - 1)) >> (i%NBITS))) ? 1 : 0;
 }
 
 /**
