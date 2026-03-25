@@ -1,0 +1,13 @@
+B1 = 00001111'10101010'01010  000
+B2 = 10101111'11
+
+Sobrando = len % NBITS
+Faltando = NBITS - len % NBITS
+
+NewWord = B2[0] >> S; 00000101
+B1[len / NBITS] = B1[len / NBITS] | NewWord;
+
+NewWord = B2[0] << F; 01111000
+B1[len / NBITS] = B1[len / NBITS] | NewWord; 
+
+B1 = 00001111'10101010'01010101'01111  000

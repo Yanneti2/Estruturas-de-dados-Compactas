@@ -3,15 +3,39 @@
   Edited in March 2026.
 */
 
+/*
+    TODO:
+    Uma funcao para appendar um long e/ou uma string a um bitvector. 
+*/
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdexcept>
 #include <cassert>
 #include "bitvector.h"
+#include <iostream>
 using namespace std;
 
-uint64_t mask[] = {
+#if IS32BIT
+#define mask32(i) mask[(i)]
+#else IS64BIT
+#define mask64(i) mask[(i)]
+#endif
+
+uint32_t mask32[] = {
+  0xFFFFFFFF,0x7FFFFFFF,0x3FFFFFFF,0x1FFFFFFF,
+  0x0FFFFFFF,0x07FFFFFF,0x03FFFFFF,0x01FFFFFF,
+  0x00FFFFFF,0x007FFFFF,0x003FFFFF,0x001FFFFF,
+  0x000FFFFF,0x0007FFFF,0x0003FFFF,0x0001FFFF,
+  0x0000FFFF,0x00007FFF,0x00003FFF,0x00001FFF,
+  0x00000FFF,0x000007FF,0x000003FF,0x000001FF,
+  0x000000FF,0x0000007F,0x0000003F,0x0000001F,
+  0x0000000F,0x00000007,0x00000003,0x00000001,
+  0x00000000
+};
+
+uint64_t mask64[] = {
   0xFFFFFFFFFFFFFFFF,0x7FFFFFFFFFFFFFFF,0x3FFFFFFFFFFFFFFF,0x1FFFFFFFFFFFFFFF,
   0x0FFFFFFFFFFFFFFF,0x07FFFFFFFFFFFFFF,0x03FFFFFFFFFFFFFF,0x01FFFFFFFFFFFFFF,
   0x00FFFFFFFFFFFFFF,0x007FFFFFFFFFFFFF,0x003FFFFFFFFFFFFF,0x001FFFFFFFFFFFFF,
@@ -30,8 +54,6 @@ uint64_t mask[] = {
   0x000000000000000F,0x0000000000000007,0x0000000000000003,0x0000000000000001,
   0x0000000000000000
 };
-
-#define mask(i) mask[(i)]
 
 /**
    A new, empty bitsequence.
@@ -60,21 +82,16 @@ bitVector::~bitVector() {
 }
 
 // TODO: change this funtion to be a method of 'bitVector', does it really need to be a method?
+
 // allocates new space for the bitvector, returns 1 if sucess
 int bitVector::grow(unsigned long ncap) {
-
-    ncap = (ncap + (NBITS-1)) / NBITS;
-
-    unsigned long* AA = (unsigned long*) realloc(A, ncap * sizeof(unsigned long));
+    TYPE* AA = (TYPE*) realloc(A, ncap * sizeof(TYPE));
     if (!AA)
         throw new bad_alloc();
-
-    for (unsigned long i = cap; i < ncap; i++) 
+    for (TYPE i = cap; i < ncap; i++) 
         AA[i] = 0;
-
     A = AA;
     cap = ncap;
-
     return 1;
 }
 
@@ -115,8 +132,7 @@ void bitVector::append0() {
 
     if (len == NBITS * cap)
         grow(cap * ratio);
-
-    set0(len++);
+    len++;
 }
 
 /**
@@ -130,132 +146,43 @@ void bitVector::append1() {
     set1(len++);
 }
 
-// fazer uma funcao para colocar uma sequencia predefinida de bits ao final de um bitvector
-/*
-int bitVector::append_seq() {
-    appendar uma sequencia de bits ao final deve ser aumentar esse numero
-    de bits com callor (setar tudo 0) e fazer um and com a sequencia de 
-    bits que deseja alocar naquele lugar 
+unsigned long bitVector::getLength() { return len; }
+unsigned long bitVector::getCap() { return cap; }
+
+// Criar um utils?? colocar na endian????
+unsigned long bitVector::ceil(unsigned long ul) { return (ul + NBITS - 1) / NBITS; }
+
+/**
+    Coloca uma sequencia predefinida de bits ao final do bitvector.
+**/
+void bitVector::extend(bitVector* B) {
+    while(!(this->ceil(len + B->getLength()) <= cap))
+        grow(cap * ratio);   
+
+    TYPE bitsSobrando = len % NBITS;
+    TYPE bitsFaltando = NBITS - bitsSobrando;
+    TYPE cur = len/ NBITS;
+
+    for (TYPE i = 0; i < B->ceil(B->getLength()); i++) {
+         if (bitsSobrando == 0) {
+            this->A[cur] = B->A[i];
+            cur++;
+        } else {
+            this->A[cur] |= B->A[i] >> bitsSobrando;
+            cur++;
+            this->A[cur] |= B->A[i] << bitsFaltando;
+        }
+    }
+    this->len += B->getLength();
 }
-*/
 
 /**
    \brief Print the bit array on the screen.
 **/
 void bitVector::print() {
-
     printf("len: %ld, cap: %ld, ratio: %f\n",len,cap,ratio);
-
-    // ruler:
-    printf(" ");
-    for (int i=0; i<NBITS*cap; i++) {
-        if (i>0 && i%10 == 0)
-            printf("%10d",i/10);
-        //else
-        //  printf(" ");
-
-        //if (i%8 == 7)
-        //  printf(" ");
-    }
-    printf("\n");
-
-    for (int i=0; i<NBITS*cap; i++) {
-        printf("%d",i%10);
-
-        //if (i%8 == 7)
-        //  printf(" ");
-    }
-    printf("\n");
-
-    // A:
-    for (int i=0; i<NBITS*cap; i++) {
+    for (TYPE i=0; i< len; i++) {
         printf("%d",bitVector::access(i));
-
-        //if (i%8 == 7) {
-        //  printf(" ");
-        //}
     }
     printf("\n\n");
-
-    // B->A in hex:
-    //u8* c = (u8*) B->A;
-    //
-    //for (i=0; i<(B->cap-1)/8+1; i++) {
-    //  printf("0x%02x    ",(unsigned char)*c);
-    //  printf(" ");
-    //  c++;
-    //}
-    //printf("\n");
-}
-
-/**
-  \brief this[i .. i+k-1] = SRC[0,k-1] 
-
-  Copy the leading k bitVector of SRC onto bitVector i,i+1,...,i+k-1 of this bit sequence.
-
-  Increase the length of the bit sequence as needed. 
-
-  Takes time proportinal to k/64.
-**/
-void bitVector::put(bitVector* SRC, unsigned long k, unsigned long i) {
-
-    while (len < i + k - 1)
-        grow(cap * ratio);
-    // The number of bitVector of a 64-bit word of SRC->A that will be copied at
-    // the right of a word of this->A and at the left of the next word of A:
-    unsigned long right = i % NBITS;  
-    unsigned long left = NBITS - right;
-
-    unsigned long lmask = left == NBITS ? 0UL : 0xFFFFFFFFFFFFFFFF << left;
-    unsigned long rmask = ~lmask;
-
-    // The next word of this->A that will be written:
-    unsigned long word = i / NBITS;
-
-    // The number of words of SRC->A that were read:
-    unsigned long w = 0;
-
-    while (k >= NBITS) {
-        if (right == 0) {
-            this->A[word] = SRC->A[w];
-            word++;
-        }
-        else {
-            this->A[word] &= lmask;
-            this->A[word] |= SRC->A[w] >> right;
-            word++;
-            this->A[word] &= rmask;
-            this->A[word] |= SRC->A[w] << left;
-        }
-
-        w++;
-        k -= NBITS;
-    }    
-
-    if (k > left) {
-        this->A[word] &= lmask;
-        this->A[word] |= SRC->A[w] >> right;
-        k -= left;
-        i = 0;
-        word++;
-    } else {
-        left = 0;
-    }
-    if (k) {
-        this->A[word] &= ~((0xFFFFFFFFFFFFFFFF << (NBITS-k)) >> i);
-        this->A[word] |= ((SRC->A[w] << left) >> (NBITS-k)) << (NBITS-k-i);
-    }
-}
-
-/**
-   Append the k most significant bitVector of number to the bit sequence.
-
-   Increase the length of the bit sequence by k.
-**/
-void bitVector::append(unsigned long number, unsigned long k) {
-
-    bitVector S(NBITS,1.0);
-    S.A[0] = number;
-
-    put(&S, k, S.len);
 }

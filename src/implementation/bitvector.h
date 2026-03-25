@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #ifndef BITVECTOR
 #define BITVECTOR
 
@@ -27,27 +29,30 @@ class bitVector {
       float ratio;        // The growing factor;
 
   public:
-      int grow(unsigned long ncap);
+    // Methods implemented post GPT (originals by stringers)
+    unsigned long ceil(unsigned long ul);
+    int grow(unsigned long ncap);
+    unsigned long getLength();
+    void extend(bitVector* B);
+    unsigned long getCap();
 
-      // Methods implemented by GPT
-      bitVector(unsigned long capacity, float growth_ratio);
-      ~bitVector();
+    // Methods implemented by GPT (originals and modded)
+    bitVector(unsigned long capacity, float growth_ratio);
+    ~bitVector();
 
-      unsigned long length();
+    void set1(unsigned long i);
+    void set0(unsigned long i);
+    int  access(unsigned long i);
 
-      void set1(unsigned long i);
-      void set0(unsigned long i);
-      int  access(unsigned long i);
+    void put(bitVector* SRC, unsigned long k, unsigned long i);
 
-      void put(bitVector* SRC, unsigned long k, unsigned long i);
+    void append0();
+    void append1();
 
-      void append0();
-      void append1();
-
-      void append(unsigned long number, unsigned long k);
+    void append(unsigned long number, unsigned long k);
 
 
-      void print();
+    void print();
 };
 
 #endif
