@@ -1,5 +1,5 @@
 #include "bitvector.h"
-#include "endian.h"
+// #include "utils.h"
 #include <iostream>
 using namespace std;
 
@@ -8,7 +8,7 @@ int main(void){
     // printar vetor inicilizado
     bitVector* B1 = new bitVector(64,2.0);
     bitVector* B2 = new bitVector(64,2.0);
-    printf("\n\n");
+    std::cout << std::endl << std::endl;
     // vetor na forma 10000100001....
     for (TYPE i = 0; i < size; i++){
         if (i%4 == 0){

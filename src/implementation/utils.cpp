@@ -1,5 +1,6 @@
 // Guilherme P. Telles
 
+#include "utils.h"
 #include <stdint.h>
 
 // returns 0 if your system is little-endian and 1 if bigendian
@@ -72,4 +73,16 @@ float reversefloat(float x) {
     py[2] = px[1];
     py[3] = px[0];
     return y;
+}
+
+// Source - https://stackoverflow.com/a/2602885
+// Posted by sth, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-03-30, License - CC BY-SA 4.0
+
+// char = 1 byte
+unsigned char reversechar(unsigned char b) {
+   b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+   b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+   b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+   return b;
 }

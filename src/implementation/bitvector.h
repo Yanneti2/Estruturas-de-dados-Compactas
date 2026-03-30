@@ -36,9 +36,9 @@ public:
     void extend(bitVector* B);
     unsigned long getCap();
 
-    // Methods implemented by GPT (originals and modded)
-    bitVector(unsigned long capacity, float growth_ratio);
-    ~bitVector();
+  // Methods implemented by GPT (originals and modded)
+  bitVector(unsigned long capacity, float growth_ratio);
+  ~bitVector();
 
     void set1(unsigned long i);
     void set0(unsigned long i);
@@ -46,15 +46,15 @@ public:
     TYPE accessWord(unsigned long i);
     TYPE accessWord(unsigned long i, unsigned wordSize);
 
-    void put(bitVector* SRC, unsigned long k, unsigned long i);
+  void put(bitVector* SRC, unsigned long k, unsigned long i);
 
-    void append0();
-    void append1();
+  void append0();
+  void append1();
 
-    void append(unsigned long number, unsigned long k);
+  void append(unsigned long number, unsigned long k);
 
 
-    void print();
+  void print();
 };
 
 #endif
