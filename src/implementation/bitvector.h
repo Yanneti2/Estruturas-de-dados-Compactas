@@ -21,14 +21,14 @@
 #endif
 
 class bitVector {
-  // TODO: *a should be unsigned long???
-  private:
-      TYPE * A;   // The bitvector itself
-      TYPE cap;  // The number of words of A.
-      TYPE len;  // The lenght of the bit sequence (logical). 
-      float ratio;        // The growing factor;
+    // TODO: *a should be unsigned long???
+private:
+    TYPE * A;   // The bitvector itself
+    TYPE cap;  // The number of words of A.
+    TYPE len;  // The lenght of the bit sequence (logical). 
+    float ratio;        // The growing factor;
 
-  public:
+public:
     // Methods implemented post GPT (originals by stringers)
     unsigned long ceil(unsigned long ul);
     int grow(unsigned long ncap);
@@ -43,6 +43,8 @@ class bitVector {
     void set1(unsigned long i);
     void set0(unsigned long i);
     int  access(unsigned long i);
+    TYPE accessWord(unsigned long i);
+    TYPE accessWord(unsigned long i, unsigned wordSize);
 
     void put(bitVector* SRC, unsigned long k, unsigned long i);
 

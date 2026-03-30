@@ -17,10 +17,12 @@
 #include <iostream>
 using namespace std;
 
-#if IS32BIT
-#define mask32(i) mask[(i)]
-#else IS64BIT
-#define mask64(i) mask[(i)]
+#ifndef mask
+#ifdef IS32BIT
+#define mask(i) mask32[(i)]
+#else
+#define mask(i) mask64[(i)]
+#endif
 #endif
 
 uint32_t mask32[] = {
@@ -123,6 +125,23 @@ void bitVector::set0(unsigned long i) {
 int bitVector::access(unsigned long i) {
 
     return (A[i / NBITS] & (((TYPE)1 << (NBITS - 1)) >> (i%NBITS))) ? 1 : 0;
+}
+
+TYPE bitVector::accessWord(unsigned long i) {
+    return A[i];
+}
+
+TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) {
+    unsigned long long start = i * wordSize;    
+    unsigned long long end = start + wordSize - 1;    
+    unsigned long long start_index = start / NBITS;   
+    unsigned long long end_index = end / NBITS;   
+    start %= NBITS;    
+    end %= NBITS;
+    if (start_index == end_index) {   
+        return (A[start_index] & mask(start) & ~mask(end + 1)) << start;
+    }
+    return (A[start_index] << start) | ((A[end_index] & ~mask(end + 1)) >> (NBITS - start));
 }
 
 /**
