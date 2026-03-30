@@ -19,7 +19,7 @@ using namespace std;
 
 #if IS32BIT
 #define mask32(i) mask[(i)]
-#else IS64BIT
+#else
 #define mask64(i) mask[(i)]
 #endif
 

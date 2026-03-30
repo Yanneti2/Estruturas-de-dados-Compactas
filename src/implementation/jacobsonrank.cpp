@@ -1,7 +1,5 @@
 #include "jacobsonrank.h"
 
-
-
 rank::rank(bitVector *B) {
     const unsigned long long B_length = B->getLength();
     const long double logN = log2(B_length);
