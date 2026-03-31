@@ -87,6 +87,7 @@ bitVector::~bitVector() {
 
 // allocates new space for the bitvector, returns 1 if sucess
 int bitVector::grow(unsigned long ncap) {
+    if (ncap <= cap) ncap = cap++;
     TYPE* AA = (TYPE*) realloc(A, ncap * sizeof(TYPE));
     if (!AA)
         throw new bad_alloc();
@@ -175,6 +176,8 @@ unsigned long bitVector::ceil(unsigned long ul) { return (ul + NBITS - 1) / NBIT
     Coloca uma sequencia predefinida de bits ao final do bitvector.
 **/
 void bitVector::extend(bitVector* B) {
+    if (cap == 0) cap = 1;
+
     while(!(this->ceil(len + B->getLength()) <= cap))
         grow(cap * ratio);   
 
@@ -196,11 +199,35 @@ void bitVector::extend(bitVector* B) {
 }
 
 /**
+    Copy a part of original bitvector into another bitvector and returns the new one.
+**/
+bitVector* bitVector::slice(unsigned long i, unsigned long k){
+    bitVector* Bnew = new bitVector(this->ceil(k), 1.5);
+    for (unsigned long j = 0; j < k; j++) {
+        if (this->access(i + j)) Bnew->append1();
+        else Bnew->append0();
+    }
+    return Bnew;
+}
+
+/**
+    Inserts a bit sequence in the i'th bitvector position.
+**/
+void bitVector::put(bitVector* B, unsigned long i) {
+    bitVector* endOriginal = this->slice(i, this->getLength() - i);
+    this->len = i;
+    this->extend(B);
+    this->extend(endOriginal);
+    endOriginal->~bitVector();
+}
+
+/**
    \brief Print the bit array on the screen.
 **/
 void bitVector::print() {
     printf("len: %ld, cap: %ld, ratio: %f\n",len,cap,ratio);
     for (TYPE i=0; i< len; i++) {
+        // if (i % 64 == 0 && i != 0) printf("'");
         printf("%d",bitVector::access(i));
     }
     printf("\n\n");

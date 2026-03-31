@@ -35,6 +35,8 @@ public:
     unsigned long getLength();
     void extend(bitVector* B);
     unsigned long getCap();
+    bitVector* slice(unsigned long i, unsigned long k);
+    void put(bitVector* B, unsigned long i);
 
   // Methods implemented by GPT (originals and modded)
   bitVector(unsigned long capacity, float growth_ratio);
