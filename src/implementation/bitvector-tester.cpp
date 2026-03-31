@@ -5,13 +5,13 @@
 using namespace std;
 
 int main(void){
-    TYPE size = 512;
+    unsigned long long size = 10000;
     // printar vetor inicilizado
     bitVector* B1 = new bitVector(64,2.0);
     bitVector* B2 = new bitVector(64,2.0);
     std::cout << std::endl << std::endl;
     // vetor na forma 10000100001....
-    for (TYPE i = 0; i < size; i++){
+    for (unsigned long long i = 0; i < size; i++){
         if (i%4 == 0){
             B1->append1();
         } else {
@@ -19,7 +19,7 @@ int main(void){
         }
     }
     B1->print();
-    for (TYPE i = 0; i<size; i++){
+    for (unsigned long long i = 0; i<size; i++){
         if (i%3 ==0) {
             B2->append1();
         } else if (i%8 == 0) {

@@ -15,11 +15,23 @@ int main(void){
     //Inicialização do bitvector
     bitVector* B1 = new bitVector(64,2.0);
 
-   for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
+    unsigned long long size = 100000;
+    int ordem = log10(size);
+
+    for(unsigned long long i = 0; i < size; i++){
+        if(rand() % 2 == 0){
+            B1->append1();
+        }else{
+            B1->append0();
+        }
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> ms_double = end - start;
+    std::cout << "Construcao bitvector de ordem "  << ordem << " - Tempo de execucao: " << ms_double.count() << " ms\n";
     
         int ordem = log10(size);
 
-        for(TYPE i = 0; i < size; i++){
+        for(unsigned long long i = 0; i < size; i++){
             if(rand() % 2 == 0){
                 B1->append1();
             }else{
@@ -43,4 +55,4 @@ int main(void){
         ms_double = end - start;
         std::cout << "Query bitvector de ordem "  << ordem << " - Tempo de execucao: " << ms_double.count() << " ms\n\n";
     }
-}
+

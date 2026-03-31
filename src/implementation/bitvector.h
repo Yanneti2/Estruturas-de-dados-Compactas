@@ -21,12 +21,12 @@
 #endif
 
 class bitVector {
-    // TODO: *a should be unsigned long???
-private:
-    TYPE * A;   // The bitvector itself
-    TYPE cap;  // The number of words of A.
-    TYPE len;  // The lenght of the bit sequence (logical). 
-    float ratio;        // The growing factor;
+  // TODO: *a should be unsigned long???
+  private:
+      TYPE * A;   // The bitvector itself
+      unsigned long long cap;  // The number of words of A.
+      unsigned long long len;  // The lenght of the bit sequence (logical). 
+      float ratio;        // The growing factor;
 
 public:
     // Methods implemented post GPT (originals by stringers)

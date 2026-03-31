@@ -91,7 +91,7 @@ int bitVector::grow(unsigned long ncap) {
     TYPE* AA = (TYPE*) realloc(A, ncap * sizeof(TYPE));
     if (!AA)
         throw new bad_alloc();
-    for (TYPE i = cap; i < ncap; i++) 
+    for (unsigned long long i = cap; i < ncap; i++) 
         AA[i] = 0;
     A = AA;
     cap = ncap;
@@ -181,11 +181,11 @@ void bitVector::extend(bitVector* B) {
     while(!(this->ceil(len + B->getLength()) <= cap))
         grow(cap * ratio);   
 
-    TYPE bitsSobrando = len % NBITS;
-    TYPE bitsFaltando = NBITS - bitsSobrando;
-    TYPE cur = len/ NBITS;
+    short bitsSobrando = len % NBITS;
+    short bitsFaltando = NBITS - bitsSobrando;
+    short cur = len/ NBITS;
 
-    for (TYPE i = 0; i < B->ceil(B->getLength()); i++) {
+    for (unsigned long long i = 0; i < B->ceil(B->getLength()); i++) {
          if (bitsSobrando == 0) {
             this->A[cur] = B->A[i];
             cur++;
@@ -226,8 +226,7 @@ void bitVector::put(bitVector* B, unsigned long i) {
 **/
 void bitVector::print() {
     printf("len: %ld, cap: %ld, ratio: %f\n",len,cap,ratio);
-    for (TYPE i=0; i< len; i++) {
-        // if (i % 64 == 0 && i != 0) printf("'");
+    for (unsigned long long i=0; i< len; i++) {
         printf("%d",bitVector::access(i));
     }
     printf("\n\n");
