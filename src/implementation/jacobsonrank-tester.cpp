@@ -1,6 +1,6 @@
 #include "jacobsonrank.h"
 #include "bitvector.h"
-// #include "utils.h"
+#include "utils.h"
 #include <iostream>
 #include <chrono>
 #include <math.h>
@@ -10,49 +10,38 @@
 //usar de ref len NBIS
 
 int main(void){
-    auto start = std::chrono::high_resolution_clock::now();
 
     //Inicialização do bitvector
-    bitVector* B1 = new bitVector(64,2.0);
-
-    unsigned long long size = 100000;
-    int ordem = log10(size);
-
-    for(unsigned long long i = 0; i < size; i++){
-        if(rand() % 2 == 0){
-            B1->append1();
-        }else{
-            B1->append0();
-        }
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> ms_double = end - start;
-    std::cout << "Construcao bitvector de ordem "  << ordem << " - Tempo de execucao: " << ms_double.count() << " ms\n";
-    
+    for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
+        bitVector* B1 = new bitVector(64,2.0);
         int ordem = log10(size);
 
-        for(unsigned long long i = 0; i < size; i++){
+        for(TYPE i = 0; i < size; i++){
             if(rand() % 2 == 0){
                 B1->append1();
             }else{
                 B1->append0();
             }
         }
+
+        rank *R = new rank(B1, false);
+
+        auto start = std::chrono::high_resolution_clock::now();
+        R->build_select(B1);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> ms_double = end - start;
-        std::cout << "Construcao bitvector de ordem "  << ordem << " - Tempo de execucao: " << ms_double.count() << " ms\n";
+        std::cout << "Tempo de construção da estrutura de select de ordem "  << ordem << ": "<< ms_double.count() << " ms\n";
 
         start = std::chrono::high_resolution_clock::now();
-        rank *R = new rank(B1, true);
+        for (int i = 0; i < 4 * size / 10; i++)
+        {
+            unsigned long long foo = rand() % (4 * size / 10);
+            R->select1(B1, foo);
+        }
         end = std::chrono::high_resolution_clock::now();
         ms_double = end - start;
-        std::cout << "Rank bitvector de ordem "  << ordem << " - Tempo de execucao: " << ms_double.count() << " ms\n";
+        std::cout << "Tempo de " << 4 * size / 10 << " operações select: " << ms_double.count() << " ms\n\n";
 
-        start = std::chrono::high_resolution_clock::now();
-        for (long long unsigned i = 0; i < size; i++)
-            R->rank1(B1, rand() % (size + 1));
-        end = std::chrono::high_resolution_clock::now();
-        ms_double = end - start;
-        std::cout << "Query bitvector de ordem "  << ordem << " - Tempo de execucao: " << ms_double.count() << " ms\n\n";
+        B1->~bitVector();
     }
-
+}

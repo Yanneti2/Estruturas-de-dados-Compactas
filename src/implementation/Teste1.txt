@@ -1,0 +1,160 @@
+
+
+Tamanho das 'chunks' fixo no tamanho da palavra e no seu quadrado.
+
+Tempo de construção da estrutura de select de ordem 3: 0.039566 ms
+Tempo de 400 operações select: 0.194765 ms
+
+Tempo de construção da estrutura de select de ordem 4: 0.471836 ms
+Tempo de 4000 operações select: 0.789559 ms
+
+Tempo de construção da estrutura de select de ordem 5: 3.35908 ms
+Tempo de 40000 operações select: 13.7443 ms
+
+Tempo de construção da estrutura de select de ordem 6: 6.17908 ms
+Tempo de 400000 operações select: 41.0742 ms
+
+Tempo de construção da estrutura de select de ordem 7: 61.5539 ms
+Tempo de 4000000 operações select: 438.575 ms
+
+Tempo de construção da estrutura de select de ordem 8: 632.034 ms
+Tempo de 40000000 operações select: 5709.1 ms
+
+Tempo de construção da estrutura de select de ordem 9: 6176.5 ms
+Tempo de 400000000 operações select: 112037 ms
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Tamanho das 'chunks' fixo no tamanho da palavra e em 512 vezes o tamanho da palavra.
+
+Tempo de construção da estrutura de select de ordem 3: 0.034368 ms
+Tempo de 400 operações select: 0.179016 ms
+
+Tempo de construção da estrutura de select de ordem 4: 0.312723 ms
+Tempo de 4000 operações select: 2.10089 ms
+
+Tempo de construção da estrutura de select de ordem 5: 2.14074 ms
+Tempo de 40000 operações select: 7.79325 ms
+
+Tempo de construção da estrutura de select de ordem 6: 6.16504 ms
+Tempo de 400000 operações select: 46.1411 ms
+
+Tempo de construção da estrutura de select de ordem 7: 61.555 ms
+Tempo de 4000000 operações select: 505.825 ms
+
+Tempo de construção da estrutura de select de ordem 8: 615.172 ms
+Tempo de 40000000 operações select: 6552.45 ms
+
+Tempo de construção da estrutura de select de ordem 9: 6150.3 ms
+Tempo de 400000000 operações select: 138480 ms
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Tamanho das 'chunks' igual ao logarítmo do tamanho do vetor de bits e seu quadrado.
+
+Tempo de construção da estrutura de select de ordem 3: 0.038588 ms
+Tempo de 400 operações select: 0.095995 ms
+
+Tempo de construção da estrutura de select de ordem 4: 0.083007 ms
+Tempo de 4000 operações select: 0.255728 ms
+
+Tempo de construção da estrutura de select de ordem 5: 0.833259 ms
+Tempo de 40000 operações select: 5.8412 ms
+
+Tempo de construção da estrutura de select de ordem 6: 6.1591 ms
+Tempo de 400000 operações select: 24.7945 ms
+
+Tempo de construção da estrutura de select de ordem 7: 61.5376 ms
+Tempo de 4000000 operações select: 312.722 ms
+
+Tempo de construção da estrutura de select de ordem 8: 618.944 ms
+Tempo de 40000000 operações select: 4876.7 ms
+
+Tempo de construção da estrutura de select de ordem 9: 6147.13 ms
+Tempo de 400000000 operações select: 98021.6 ms
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Tamanho das 'chunks' igual ao logarítmo do tamanho do vetor de bits e seu quadrado e sem utilizar o vetor de select.
+
+Tempo de construção da estrutura de select de ordem 3: 0.03321 ms
+Tempo de 400 operações select: 0.111523 ms
+
+Tempo de construção da estrutura de select de ordem 4: 0.321041 ms
+Tempo de 4000 operações select: 1.44409 ms
+
+Tempo de construção da estrutura de select de ordem 5: 0.636397 ms
+Tempo de 40000 operações select: 3.60738 ms
+
+Tempo de construção da estrutura de select de ordem 6: 6.1702 ms
+Tempo de 400000 operações select: 43.1414 ms
+
+Tempo de construção da estrutura de select de ordem 7: 61.6512 ms
+Tempo de 4000000 operações select: 533.83 ms
+
+Tempo de construção da estrutura de select de ordem 8: 621.157 ms
+Tempo de 40000000 operações select: 7694.58 ms
+
+Tempo de construção da estrutura de select de ordem 9: 6145.43 ms
+Tempo de 400000000 operações select: 134449 ms
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Tamanho das 'chunks' fixo no tamanho da palavra e em 512 vezes o tamanho da palavra e sem utilizar o vetor de select.
+
+Tempo de construção da estrutura de select de ordem 3: 0.041166 ms
+Tempo de 400 operações select: 0.17399 ms
+
+Tempo de construção da estrutura de select de ordem 4: 0.305137 ms
+Tempo de 4000 operações select: 2.20959 ms
+
+Tempo de construção da estrutura de select de ordem 5: 2.33891 ms
+Tempo de 40000 operações select: 4.37979 ms
+
+Tempo de construção da estrutura de select de ordem 6: 6.23764 ms
+Tempo de 400000 operações select: 49.1172 ms
+
+Tempo de construção da estrutura de select de ordem 7: 61.4814 ms
+Tempo de 4000000 operações select: 572.643 ms
+
+Tempo de construção da estrutura de select de ordem 8: 615.827 ms
+Tempo de 40000000 operações select: 7966.62 ms
+
+Tempo de construção da estrutura de select de ordem 9: 6145.83 ms
+Tempo de 400000000 operações select: 134917 ms
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Tamanho das 'chunks' fixo no tamanho da palavra e em 512 vezes o tamanho da palavra e sem utilizar o vetor de select.
+
+Tempo de construção da estrutura de select de ordem 3: 0.030693 ms
+Tempo de 400 operações select: 0.130725 ms
+
+Tempo de construção da estrutura de select de ordem 4: 0.342828 ms
+Tempo de 4000 operações select: 1.81584 ms
+
+Tempo de construção da estrutura de select de ordem 5: 0.634751 ms
+Tempo de 40000 operações select: 4.32942 ms
+
+Tempo de construção da estrutura de select de ordem 6: 6.18413 ms
+Tempo de 400000 operações select: 48.6248 ms
+
+Tempo de construção da estrutura de select de ordem 7: 61.6517 ms
+Tempo de 4000000 operações select: 574.052 ms
+
+Tempo de construção da estrutura de select de ordem 8: 615.016 ms
+Tempo de 40000000 operações select: 7773.78 ms
+
+Tempo de construção da estrutura de select de ordem 9: 6166.8 ms
+Tempo de 400000000 operações select: 126863 ms
