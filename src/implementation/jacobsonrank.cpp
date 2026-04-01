@@ -1,48 +1,84 @@
 #include "jacobsonrank.h"
+#include <iostream>
 
+#ifndef mask
+#ifdef IS32BIT
+#define mask(i) mask32[(i)]
+#else
+#define mask(i) mask64[(i)]
+#endif
+#endif
 
+extern uint32_t mask32[];
 
-rank::rank(bitVector *B) {
-    const unsigned long long B_length = B->getLength();
-    const long double logN = log2(B_length);
-    this->logN = logN;
+extern uint64_t mask64[];
 
-    const unsigned long long len = ceil(B_length / (long double) ceil(logN * logN));
-    this->len = len;
+rank::rank(bitVector *B, bool fixSizeToWordSize) {
+    unsigned long long B_length = B->getLength();
+    unsigned chunk1_size;
+    unsigned chunk2_size;
+    unsigned long long layer1_size;
+    unsigned long long layer2_size;
+    unsigned chunk2_per_chunk1;
 
-    this->relative_ranks = (unsigned long long*) malloc(len * sizeof(unsigned long long));
-    unsigned long long len_sub = ceil(ceil(logN * logN) / (long double) ceil(logN));
-    this->super_relative_ranks = (short*) malloc(len * len_sub * sizeof(short));
+    if (fixSizeToWordSize) {
+        chunk1_size = NBITS * NBITS;
+        chunk2_size = NBITS;
+    } else {
+        const long double logN = log2(B_length);
+        chunk1_size = ceil(logN) * floor(logN);
+        chunk2_size = chunk1_size / ceil(logN);
+    }
+    layer1_size = (B_length + chunk1_size - 1) / chunk1_size;
+    chunk2_per_chunk1 = (chunk1_size + chunk2_size - 1) / chunk2_size;
+    layer2_size = chunk2_per_chunk1 * (layer1_size - 1) + (B_length % chunk1_size + chunk2_size - 1) / chunk2_size + 1;
 
-    unsigned long long counter = 0;
-    short relative_counter = 0;
-    for (unsigned long long i = 0; i < B_length; i++) {
-        if (i % (unsigned long long) ceil(logN * logN) == 0) {
-            this->relative_ranks[i / (unsigned long long) ceil(logN * logN)] = counter;
-            relative_counter = 0;
+    this->chunk1_size = chunk1_size;
+    this->chunk2_size = chunk2_size;
+    this->layer1_size = layer1_size;
+    this->layer2_size = layer2_size;
+    this->chunk2_per_chunk1 = chunk2_per_chunk1;
+
+    this->layer1 = (unsigned long long*) malloc(layer1_size * sizeof(unsigned long long));
+    this->layer2 = (short*) malloc(layer2_size * sizeof(short));
+
+    unsigned long long layer1_counter = 0;
+    unsigned long long layer2_counter = 0;
+    for (unsigned long long i = 0; i < layer2_size; i++) {
+        if (i % chunk2_per_chunk1 == 0) {
+            this->layer1[i / chunk2_per_chunk1] = layer1_counter;
+            layer2_counter = 0;
         }
-
-        if (i % (unsigned long long) ceil(logN) == 0) {
-            this->super_relative_ranks[i / (unsigned long long) (len_sub)] = relative_counter;
-        }
-        int cur_bit = B->access(i);
-        counter += cur_bit;
-        relative_counter += cur_bit;
+        this->layer2[i] = layer2_counter;
+        short pop_count = std::__popcount(B->accessWord(i, chunk2_size));
+        layer1_counter += pop_count;
+        layer2_counter += pop_count;
     }
 }
 
 unsigned long long rank::rank1(bitVector *B, unsigned long long i) {
-    unsigned long long len_sub = ceil(ceil(logN * logN) / (long double) ceil(logN));
-
-    unsigned pop_count = 0;
-    for (unsigned long long j = 0; j < i % len_sub; j++) {
-        pop_count += B->access(i / len_sub * len_sub + j); 
-        
-    }
-
-    return this->relative_ranks[i / (unsigned long long) ceil(logN * logN)] + this->super_relative_ranks[i / (unsigned long long) len_sub] + pop_count;
+    unsigned long long chunk1 = i / chunk1_size;
+    unsigned long long chunk2 = i / chunk2_size;
+    unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~mask(i % chunk2_size));
+    return this->layer1[chunk1] + this->layer2[chunk2] + pop_count;
 }
 
 unsigned long long rank::rank0(bitVector *B, unsigned long long i) {
     return i - rank1(B, i);
+}
+
+void rank::print() {
+    std::cout << "Layer1_Size: " << layer1_size << 
+        "\n" << "Layer2_Size: " << layer2_size << 
+        "\n" << "Chunk1_Size: " << chunk1_size << 
+        "\n" << "Chunk2_Size: " << chunk2_size << 
+        "\n" << "Chunk2_Per_Chunk1: " << chunk2_per_chunk1 << 
+        "\n\n";
+    for (unsigned long long i = 0; i < layer2_size; i++) {
+        if (i % chunk2_per_chunk1 == 0) {
+            std::cout << "\n" << this->layer1[i / chunk2_per_chunk1] << ":\n";
+        }
+        std::cout << this->layer2[i] << "   ";
+    }
+    std::cout << "\n";
 }

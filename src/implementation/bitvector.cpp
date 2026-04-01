@@ -17,42 +17,44 @@
 #include <iostream>
 using namespace std;
 
-#if IS32BIT
-#define mask32(i) mask[(i)]
-#else IS64BIT
-#define mask64(i) mask[(i)]
+#ifndef mask
+#ifdef IS32BIT
+#define mask(i) mask32[(i)]
+#else
+#define mask(i) mask64[(i)]
+#endif
 #endif
 
 uint32_t mask32[] = {
-  0xFFFFFFFF,0x7FFFFFFF,0x3FFFFFFF,0x1FFFFFFF,
-  0x0FFFFFFF,0x07FFFFFF,0x03FFFFFF,0x01FFFFFF,
-  0x00FFFFFF,0x007FFFFF,0x003FFFFF,0x001FFFFF,
-  0x000FFFFF,0x0007FFFF,0x0003FFFF,0x0001FFFF,
-  0x0000FFFF,0x00007FFF,0x00003FFF,0x00001FFF,
-  0x00000FFF,0x000007FF,0x000003FF,0x000001FF,
-  0x000000FF,0x0000007F,0x0000003F,0x0000001F,
-  0x0000000F,0x00000007,0x00000003,0x00000001,
-  0x00000000
+    0xFFFFFFFF,0x7FFFFFFF,0x3FFFFFFF,0x1FFFFFFF,
+    0x0FFFFFFF,0x07FFFFFF,0x03FFFFFF,0x01FFFFFF,
+    0x00FFFFFF,0x007FFFFF,0x003FFFFF,0x001FFFFF,
+    0x000FFFFF,0x0007FFFF,0x0003FFFF,0x0001FFFF,
+    0x0000FFFF,0x00007FFF,0x00003FFF,0x00001FFF,
+    0x00000FFF,0x000007FF,0x000003FF,0x000001FF,
+    0x000000FF,0x0000007F,0x0000003F,0x0000001F,
+    0x0000000F,0x00000007,0x00000003,0x00000001,
+    0x00000000
 };
 
 uint64_t mask64[] = {
-  0xFFFFFFFFFFFFFFFF,0x7FFFFFFFFFFFFFFF,0x3FFFFFFFFFFFFFFF,0x1FFFFFFFFFFFFFFF,
-  0x0FFFFFFFFFFFFFFF,0x07FFFFFFFFFFFFFF,0x03FFFFFFFFFFFFFF,0x01FFFFFFFFFFFFFF,
-  0x00FFFFFFFFFFFFFF,0x007FFFFFFFFFFFFF,0x003FFFFFFFFFFFFF,0x001FFFFFFFFFFFFF,
-  0x000FFFFFFFFFFFFF,0x0007FFFFFFFFFFFF,0x0003FFFFFFFFFFFF,0x0001FFFFFFFFFFFF,
-  0x0000FFFFFFFFFFFF,0x00007FFFFFFFFFFF,0x00003FFFFFFFFFFF,0x00001FFFFFFFFFFF,
-  0x00000FFFFFFFFFFF,0x000007FFFFFFFFFF,0x000003FFFFFFFFFF,0x000001FFFFFFFFFF,
-  0x000000FFFFFFFFFF,0x0000007FFFFFFFFF,0x0000003FFFFFFFFF,0x0000001FFFFFFFFF,
-  0x0000000FFFFFFFFF,0x00000007FFFFFFFF,0x00000003FFFFFFFF,0x00000001FFFFFFFF,
-  0x00000000FFFFFFFF,0x000000007FFFFFFF,0x000000003FFFFFFF,0x000000001FFFFFFF,
-  0x000000000FFFFFFF,0x0000000007FFFFFF,0x0000000003FFFFFF,0x0000000001FFFFFF,
-  0x0000000000FFFFFF,0x00000000007FFFFF,0x00000000003FFFFF,0x00000000001FFFFF,
-  0x00000000000FFFFF,0x000000000007FFFF,0x000000000003FFFF,0x000000000001FFFF,
-  0x000000000000FFFF,0x0000000000007FFF,0x0000000000003FFF,0x0000000000001FFF,
-  0x0000000000000FFF,0x00000000000007FF,0x00000000000003FF,0x00000000000001FF,
-  0x00000000000000FF,0x000000000000007F,0x000000000000003F,0x000000000000001F,
-  0x000000000000000F,0x0000000000000007,0x0000000000000003,0x0000000000000001,
-  0x0000000000000000
+    0xFFFFFFFFFFFFFFFF,0x7FFFFFFFFFFFFFFF,0x3FFFFFFFFFFFFFFF,0x1FFFFFFFFFFFFFFF,
+    0x0FFFFFFFFFFFFFFF,0x07FFFFFFFFFFFFFF,0x03FFFFFFFFFFFFFF,0x01FFFFFFFFFFFFFF,
+    0x00FFFFFFFFFFFFFF,0x007FFFFFFFFFFFFF,0x003FFFFFFFFFFFFF,0x001FFFFFFFFFFFFF,
+    0x000FFFFFFFFFFFFF,0x0007FFFFFFFFFFFF,0x0003FFFFFFFFFFFF,0x0001FFFFFFFFFFFF,
+    0x0000FFFFFFFFFFFF,0x00007FFFFFFFFFFF,0x00003FFFFFFFFFFF,0x00001FFFFFFFFFFF,
+    0x00000FFFFFFFFFFF,0x000007FFFFFFFFFF,0x000003FFFFFFFFFF,0x000001FFFFFFFFFF,
+    0x000000FFFFFFFFFF,0x0000007FFFFFFFFF,0x0000003FFFFFFFFF,0x0000001FFFFFFFFF,
+    0x0000000FFFFFFFFF,0x00000007FFFFFFFF,0x00000003FFFFFFFF,0x00000001FFFFFFFF,
+    0x00000000FFFFFFFF,0x000000007FFFFFFF,0x000000003FFFFFFF,0x000000001FFFFFFF,
+    0x000000000FFFFFFF,0x0000000007FFFFFF,0x0000000003FFFFFF,0x0000000001FFFFFF,
+    0x0000000000FFFFFF,0x00000000007FFFFF,0x00000000003FFFFF,0x00000000001FFFFF,
+    0x00000000000FFFFF,0x000000000007FFFF,0x000000000003FFFF,0x000000000001FFFF,
+    0x000000000000FFFF,0x0000000000007FFF,0x0000000000003FFF,0x0000000000001FFF,
+    0x0000000000000FFF,0x00000000000007FF,0x00000000000003FF,0x00000000000001FF,
+    0x00000000000000FF,0x000000000000007F,0x000000000000003F,0x000000000000001F,
+    0x000000000000000F,0x0000000000000007,0x0000000000000003,0x0000000000000001,
+    0x0000000000000000
 };
 
 /**
@@ -85,10 +87,11 @@ bitVector::~bitVector() {
 
 // allocates new space for the bitvector, returns 1 if sucess
 int bitVector::grow(unsigned long ncap) {
+    if (ncap <= cap) ncap = cap++;
     TYPE* AA = (TYPE*) realloc(A, ncap * sizeof(TYPE));
     if (!AA)
         throw new bad_alloc();
-    for (TYPE i = cap; i < ncap; i++) 
+    for (unsigned long long i = cap; i < ncap; i++) 
         AA[i] = 0;
     A = AA;
     cap = ncap;
@@ -101,8 +104,7 @@ int bitVector::grow(unsigned long ncap) {
    If i > |A| - 1 then the behavior is undefined.
 **/
 void bitVector::set1(unsigned long i) {
-
-    A[i / NBITS] |= ((TYPE)1 << (NBITS - 1)) >> (i % NBITS);
+    A[i / NBITS] |= (mask(i % NBITS) ^ mask(i % NBITS + 1));
 }
 
 /**
@@ -111,8 +113,7 @@ void bitVector::set1(unsigned long i) {
    If i > |A| - 1 then the behavior is undefined.
 **/
 void bitVector::set0(unsigned long i) {
-
-    A[i / NBITS] &= ~(((TYPE)1 << (NBITS - 1)) >> (i % NBITS));
+    A[i / NBITS] &= ~(mask(i % NBITS) ^ mask(i % NBITS + 1));
 }
 
 /**
@@ -121,8 +122,24 @@ void bitVector::set0(unsigned long i) {
    If i > |A|-1 then the behavior is undefined.
 **/
 int bitVector::access(unsigned long i) {
+    return (A[i / NBITS] & (mask(i % NBITS) ^ mask(i % NBITS + 1))) ? 1 : 0;
+}
 
-    return (A[i / NBITS] & (((TYPE)1 << (NBITS - 1)) >> (i%NBITS))) ? 1 : 0;
+TYPE bitVector::accessWord(unsigned long i) {
+    return A[i];
+}
+
+TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) {
+    unsigned long long start = i * wordSize;    
+    unsigned long long end = start + wordSize - 1;    
+    unsigned long long start_index = start / NBITS;   
+    unsigned long long end_index = end / NBITS;   
+    start %= NBITS;    
+    end %= NBITS;
+    if (start_index == end_index) {   
+        return (A[start_index] & ~mask(end + 1)) << start;
+    }
+    return (A[start_index] << start) | ((A[end_index] & ~mask(end + 1)) >> (NBITS - start));
 }
 
 /**
@@ -156,14 +173,16 @@ unsigned long bitVector::ceil(unsigned long ul) { return (ul + NBITS - 1) / NBIT
     Coloca uma sequencia predefinida de bits ao final do bitvector.
 **/
 void bitVector::extend(bitVector* B) {
+    if (cap == 0) cap = 1;
+
     while(!(this->ceil(len + B->getLength()) <= cap))
         grow(cap * ratio);   
 
-    TYPE bitsSobrando = len % NBITS;
-    TYPE bitsFaltando = NBITS - bitsSobrando;
-    TYPE cur = len/ NBITS;
+    short bitsSobrando = len % NBITS;
+    short bitsFaltando = NBITS - bitsSobrando;
+    short cur = len/ NBITS;
 
-    for (TYPE i = 0; i < B->ceil(B->getLength()); i++) {
+    for (unsigned long long i = 0; i < B->ceil(B->getLength()); i++) {
          if (bitsSobrando == 0) {
             this->A[cur] = B->A[i];
             cur++;
@@ -177,11 +196,34 @@ void bitVector::extend(bitVector* B) {
 }
 
 /**
+    Copy a part of original bitvector into another bitvector and returns the new one.
+**/
+bitVector* bitVector::slice(unsigned long i, unsigned long k){
+    bitVector* Bnew = new bitVector(this->ceil(k), 1.5);
+    for (unsigned long j = 0; j < k; j++) {
+        if (this->access(i + j)) Bnew->append1();
+        else Bnew->append0();
+    }
+    return Bnew;
+}
+
+/**
+    Inserts a bit sequence in the i'th bitvector position.
+**/
+void bitVector::put(bitVector* B, unsigned long i) {
+    bitVector* endOriginal = this->slice(i, this->getLength() - i);
+    this->len = i;
+    this->extend(B);
+    this->extend(endOriginal);
+    endOriginal->~bitVector();
+}
+
+/**
    \brief Print the bit array on the screen.
 **/
 void bitVector::print() {
     printf("len: %ld, cap: %ld, ratio: %f\n",len,cap,ratio);
-    for (TYPE i=0; i< len; i++) {
+    for (unsigned long long i=0; i< len; i++) {
         printf("%d",bitVector::access(i));
     }
     printf("\n\n");

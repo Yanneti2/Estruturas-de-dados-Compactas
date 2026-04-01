@@ -26,4 +26,7 @@ double reversedouble(double x);
 // transforms a 32 bit decimal (float) from big to little-endian and vice versa
 float reversefloat(float x);
 
+// char = 1 byte
+unsigned char reversechar(unsigned char b);
+
 #endif
