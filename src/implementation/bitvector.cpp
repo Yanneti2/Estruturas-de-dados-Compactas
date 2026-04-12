@@ -186,3 +186,65 @@ void bitVector::print() {
     }
     printf("\n\n");
 }
+
+/**
+   \\brief Serialize the bitvector to a binary file.
+
+   The file format is:
+   - uint64_t: length (len)
+   - uint64_t: capacity (cap) 
+   - uint64_t: ratio
+   - uint64_t: actual words used (ceil(len/NBITS))
+   - TYPE[]: the bit data
+**/
+void bitVector::serialize(const char* filename) {
+    FILE* f = fopen(filename, "wb");
+    if (!f) {
+        throw runtime_error("Cannot open file for writing");
+    }
+    
+    unsigned long wordsUsed = (len + NBITS - 1) / NBITS;
+    
+    fwrite(&len, sizeof(unsigned long), 1, f);
+    fwrite(&cap, sizeof(unsigned long), 1, f);
+    fwrite(&ratio, sizeof(float), 1, f);
+    fwrite(&wordsUsed, sizeof(unsigned long), 1, f);
+    fwrite(A, sizeof(TYPE), wordsUsed, f);
+    
+    fclose(f);
+}
+
+/**
+   \\brief Deserialize a bitvector from a binary file.
+**/
+bitVector* bitVector::deserialize(const char* filename) {
+    FILE* f = fopen(filename, "rb");
+    if (!f) {
+        throw runtime_error("Cannot open file for reading");
+    }
+    
+    unsigned long len, cap;
+    float ratio;
+    unsigned long wordsUsed;
+    
+    fread(&len, sizeof(unsigned long), 1, f);
+    fread(&cap, sizeof(unsigned long), 1, f);
+    fread(&ratio, sizeof(float), 1, f);
+    fread(&wordsUsed, sizeof(unsigned long), 1, f);
+    
+    bitVector* bv = new bitVector(cap * NBITS, ratio);
+    bv->len = len;
+    
+    fread(bv->A, sizeof(TYPE), wordsUsed, f);
+    
+    fclose(f);
+    return bv;
+}
+
+/**
+   \\brief Get the size in bytes of the serialized bitvector.
+**/
+unsigned long bitVector::serializeSize() {
+    unsigned long wordsUsed = (len + NBITS - 1) / NBITS;
+    return sizeof(unsigned long) * 4 + sizeof(float) + wordsUsed * sizeof(TYPE);
+}

@@ -53,6 +53,11 @@ class bitVector {
 
 
     void print();
+
+    // Serialization methods
+    void serialize(const char* filename);
+    static bitVector* deserialize(const char* filename);
+    unsigned long serializeSize();
 };
 
 #endif
