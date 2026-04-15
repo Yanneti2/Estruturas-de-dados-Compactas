@@ -6,18 +6,14 @@
 // TODO: check system word size and use word size accordingly
 #if INTPTR_MAX == INT64_MAX
 #define IS64BIT
+#define NBITS 64
+#define TYPE uint64_t
 #elif INTPTR_MAX == INT32_MAX
 #define IS32BIT
-#else
-#error "Not a known processor"
-#endif
-
-#ifdef IS32BIT
 #define NBITS 32
 #define TYPE uint32_t
 #else
-#define NBITS 64
-#define TYPE uint64_t
+#error "Not a known processor"
 #endif
 
 using namespace std;
@@ -25,14 +21,13 @@ using namespace std;
 class bitVector {
     // TODO: *a should be unsigned long???
 private:
-    TYPE * A;   // The bitvector itself
+    TYPE *A;   // The bitvector itself
     size_t _cap;  // The number of words of A.
     size_t _size;  // The lenght of the bit sequence (logical). 
     float ratio;        // The growing factor;
 
 public:
     // Methods implemented post GPT (originals by stringers)
-    unsigned long ceil(unsigned long ul);
     int grow(unsigned long ncap);
     size_t size() const;
     size_t cap() const;

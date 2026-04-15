@@ -5,7 +5,7 @@
 #ifndef JACOBSONRANK
 #define JACOBSONRANK
 
-class rank {
+class jacobsonRank {
 private:
     unsigned long long layer1_size;
     unsigned long long layer2_size;
@@ -19,8 +19,8 @@ private:
     unsigned long long select_j;
 
 public:
-    rank(bitVector *B, bool fixSizeToWordSize = false);
-    ~rank();
+    jacobsonRank(bitVector *B, bool fixSizeToWordSize = false);
+    ~jacobsonRank();
     unsigned long long rank0(bitVector *B, unsigned long long i);
     unsigned long long rank1(bitVector *B, unsigned long long i);
     void print();
