@@ -121,11 +121,11 @@ void bitVector::set0(unsigned long i) {
 
    If i > |A|-1 then the behavior is undefined.
 **/
-int bitVector::operator[](unsigned long i) {
+int bitVector::operator[](unsigned long i) const{
     return (A[i / NBITS] & (mask(i % NBITS) ^ mask(i % NBITS + 1))) ? 1 : 0;
 }
 
-bool bitVector::operator==(bitVector B) {
+bool bitVector::operator==(bitVector B) const {
     size_t thisSize = this->size();
     size_t BSize = B.size();
     if (thisSize != BSize) return false;
@@ -135,11 +135,11 @@ bool bitVector::operator==(bitVector B) {
     }
     return true;
 }
-TYPE bitVector::accessWord(unsigned long i) {
+TYPE bitVector::accessWord(unsigned long i) const {
     return A[i];
 }
 
-TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) {
+TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) const {
     unsigned long long start = i * wordSize;    
     unsigned long long end = start + wordSize - 1;    
     unsigned long long start_index = start / NBITS;   
@@ -173,8 +173,8 @@ void bitVector::append1() {
     set1(_size++);
 }
 
-unsigned long bitVector::size() { return _size; }
-unsigned long bitVector::cap() { return _cap; }
+unsigned long bitVector::size() const { return _size; }
+unsigned long bitVector::cap() const { return _cap; }
 
 // Criar um utils?? colocar na endian????
 unsigned long bitVector::ceil(unsigned long ul) { return (ul + NBITS - 1) / NBITS; }
@@ -208,8 +208,8 @@ void bitVector::extend(bitVector* B) {
 /**
     Copy a part of original bitvector into another bitvector and returns the new one.
 **/
-bitVector* bitVector::slice(unsigned long i, unsigned long k){
-    bitVector* Bnew = new bitVector(this->ceil(k), 1.5);
+bitVector* bitVector::slice(unsigned long i, unsigned long k) const {
+    bitVector* Bnew = new bitVector((k + NBITS - 1)  / NBITS, 1.5);
     for (unsigned long j = 0; j < k; j++) {
         if ((*this)[i + j])
             Bnew->append1();
@@ -233,7 +233,7 @@ void bitVector::put(bitVector* B, unsigned long i) {
 /**
    \brief Print the bit array on the screen.
 **/
-void bitVector::print() {
+void bitVector::print() const {
     printf("len: %ld, cap: %ld, ratio: %f\n", _size, _cap, ratio);
     for (unsigned long long i=0; i< _size; i++) {
         printf("%d", (*this)[i]);

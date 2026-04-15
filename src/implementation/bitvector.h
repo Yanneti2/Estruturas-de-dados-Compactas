@@ -34,31 +34,32 @@ public:
     // Methods implemented post GPT (originals by stringers)
     unsigned long ceil(unsigned long ul);
     int grow(unsigned long ncap);
-    size_t size();
-    size_t cap();
-    void extend(bitVector *B);
-    bitVector *slice(unsigned long i, unsigned long k);
-    void put(bitVector *B, unsigned long i);
+    size_t size() const;
+    size_t cap() const;
 
     // Methods implemented by GPT (originals and modded)
     bitVector(unsigned long capacity, float growth_ratio);
     ~bitVector();
 
-    void set1(unsigned long i);
+    void append0();
+    void append1();
     void set0(unsigned long i);
-    int  operator[](unsigned long i);
-    bool operator==(bitVector B);
-    TYPE accessWord(unsigned long i);
-    TYPE accessWord(unsigned long i, unsigned wordSize);
+    void set1(unsigned long i);
+    void extend(bitVector *B);
+    void put(bitVector *B, unsigned long i);
+
+    bool operator==(bitVector B) const;
+    int  operator[](unsigned long i) const;
+    TYPE accessWord(unsigned long i) const;
+    TYPE accessWord(unsigned long i, unsigned wordSize) const;
+    bitVector *slice(unsigned long i, unsigned long k) const;
 
     void put(bitVector *SRC, unsigned long k, unsigned long i);
 
-    void append0();
-    void append1();
 
     void append(unsigned long number, unsigned long k);
 
-    void print();
+    void print() const;
 };
 
 #endif
