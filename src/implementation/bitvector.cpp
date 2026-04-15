@@ -65,15 +65,15 @@ uint64_t mask64[] = {
 **/
 
 // Initializes a bitvector instance 
-bitVector::bitVector(unsigned long capacity, float growth_ratio) {
+bitVector::bitVector(unsigned long cap, float growth_ratio) {
 
     assert(sizeof(TYPE) * 8 == NBITS);
 
-    cap = (capacity == 0 ? 0 : (capacity+(NBITS-1))/NBITS);
-    len = 0;
+    _cap = (cap == 0 ? 0 : (cap + (NBITS - 1)) / NBITS);
+    _size = 0;
     ratio = growth_ratio;
 
-    A = (unsigned long*) calloc(cap,sizeof(unsigned long));
+    A = (unsigned long*) calloc(_cap ,sizeof(unsigned long));
     if (!A)
         throw new bad_alloc();
 }
@@ -87,14 +87,14 @@ bitVector::~bitVector() {
 
 // allocates new space for the bitvector, returns 1 if sucess
 int bitVector::grow(unsigned long ncap) {
-    if (ncap <= cap) ncap = cap++;
+    if (ncap <= _cap) ncap = _cap++;
     TYPE* AA = (TYPE*) realloc(A, ncap * sizeof(TYPE));
     if (!AA)
         throw new bad_alloc();
-    for (unsigned long long i = cap; i < ncap; i++) 
+    for (unsigned long long i = _cap; i < ncap; i++) 
         AA[i] = 0;
     A = AA;
-    cap = ncap;
+    _cap = ncap;
     return 1;
 }
 
@@ -126,8 +126,8 @@ int bitVector::operator[](unsigned long i) {
 }
 
 bool bitVector::operator==(bitVector B) {
-    size_t thisSize = this->getLength();
-    size_t BSize = B.getLength();
+    size_t thisSize = this->size();
+    size_t BSize = B.size();
     if (thisSize != BSize) return false;
     
     for (size_t i = 0; i < thisSize / NBITS; i++) {
@@ -157,9 +157,9 @@ TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) {
 **/
 void bitVector::append0() {
 
-    if (len == NBITS * cap)
-        grow(cap * ratio);
-    len++;
+    if (_size == NBITS * _cap)
+        grow(_cap * ratio);
+    _size++;
 }
 
 /**
@@ -167,14 +167,14 @@ void bitVector::append0() {
 **/
 void bitVector::append1() {
 
-    if (len == NBITS*cap)
-        grow(cap * ratio);
+    if (_size == NBITS * _cap)
+        grow(_cap * ratio);
 
-    set1(len++);
+    set1(_size++);
 }
 
-unsigned long bitVector::getLength() { return len; }
-unsigned long bitVector::getCap() { return cap; }
+unsigned long bitVector::size() { return _size; }
+unsigned long bitVector::cap() { return _cap; }
 
 // Criar um utils?? colocar na endian????
 unsigned long bitVector::ceil(unsigned long ul) { return (ul + NBITS - 1) / NBITS; }
@@ -183,16 +183,16 @@ unsigned long bitVector::ceil(unsigned long ul) { return (ul + NBITS - 1) / NBIT
     Coloca uma sequencia predefinida de bits ao final do bitvector.
 **/
 void bitVector::extend(bitVector* B) {
-    if (cap == 0) cap = 1;
+    if (_cap == 0) _cap = 1;
 
-    while(!(this->ceil(len + B->getLength()) <= cap))
-        grow(cap * ratio);   
+    while(!(this->ceil(_size + B->size()) <= _cap))
+        grow(_cap * ratio);   
 
-    short bitsSobrando = len % NBITS;
+    short bitsSobrando = _size % NBITS;
     short bitsFaltando = NBITS - bitsSobrando;
-    short cur = len/ NBITS;
+    short cur = _size / NBITS;
 
-    for (unsigned long long i = 0; i < B->ceil(B->getLength()); i++) {
+    for (unsigned long long i = 0; i < B->ceil(B->size()); i++) {
          if (bitsSobrando == 0) {
             this->A[cur] = B->A[i];
             cur++;
@@ -202,7 +202,7 @@ void bitVector::extend(bitVector* B) {
             this->A[cur] |= B->A[i] << bitsFaltando;
         }
     }
-    this->len += B->getLength();
+    this->_size += B->size();
 }
 
 /**
@@ -223,8 +223,8 @@ bitVector* bitVector::slice(unsigned long i, unsigned long k){
     Inserts a bit sequence in the i'th bitvector position.
 **/
 void bitVector::put(bitVector* B, unsigned long i) {
-    bitVector* endOriginal = this->slice(i, this->getLength() - i);
-    this->len = i;
+    bitVector* endOriginal = this->slice(i, this->size() - i);
+    this->_size = i;
     this->extend(B);
     this->extend(endOriginal);
     endOriginal->~bitVector();
@@ -234,8 +234,8 @@ void bitVector::put(bitVector* B, unsigned long i) {
    \brief Print the bit array on the screen.
 **/
 void bitVector::print() {
-    printf("len: %ld, cap: %ld, ratio: %f\n",len,cap,ratio);
-    for (unsigned long long i=0; i< len; i++) {
+    printf("len: %ld, cap: %ld, ratio: %f\n", _size, _cap, ratio);
+    for (unsigned long long i=0; i< _size; i++) {
         printf("%d", (*this)[i]);
     }
     printf("\n\n");
