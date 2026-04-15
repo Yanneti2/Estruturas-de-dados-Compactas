@@ -121,10 +121,20 @@ void bitVector::set0(unsigned long i) {
 
    If i > |A|-1 then the behavior is undefined.
 **/
-int bitVector::access(unsigned long i) {
+int bitVector::operator[](unsigned long i) {
     return (A[i / NBITS] & (mask(i % NBITS) ^ mask(i % NBITS + 1))) ? 1 : 0;
 }
 
+bool bitVector::operator==(bitVector B) {
+    size_t thisSize = this->getLength();
+    size_t BSize = B.getLength();
+    if (thisSize != BSize) return false;
+    
+    for (size_t i = 0; i < thisSize / NBITS; i++) {
+        if (this->accessWord(i) != B.accessWord(i)) return false;
+    }
+    return true;
+}
 TYPE bitVector::accessWord(unsigned long i) {
     return A[i];
 }
@@ -201,8 +211,10 @@ void bitVector::extend(bitVector* B) {
 bitVector* bitVector::slice(unsigned long i, unsigned long k){
     bitVector* Bnew = new bitVector(this->ceil(k), 1.5);
     for (unsigned long j = 0; j < k; j++) {
-        if (this->access(i + j)) Bnew->append1();
-        else Bnew->append0();
+        if ((*this)[i + j])
+            Bnew->append1();
+        else
+            Bnew->append0();
     }
     return Bnew;
 }
@@ -224,7 +236,7 @@ void bitVector::put(bitVector* B, unsigned long i) {
 void bitVector::print() {
     printf("len: %ld, cap: %ld, ratio: %f\n",len,cap,ratio);
     for (unsigned long long i=0; i< len; i++) {
-        printf("%d",bitVector::access(i));
+        printf("%d", (*this)[i]);
     }
     printf("\n\n");
 }
