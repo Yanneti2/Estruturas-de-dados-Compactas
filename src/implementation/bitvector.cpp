@@ -17,15 +17,15 @@
 #include <iostream>
 using namespace std;
 
-#ifndef mask
+#ifndef bitMask
 #ifdef IS32BIT
-#define mask(i) mask32[(i)]
+#define bitMask(i) bitMask32[(i)]
 #else
-#define mask(i) mask64[(i)]
+#define bitMask(i) bitMask64[(i)]
 #endif
 #endif
 
-uint32_t mask32[] = {
+uint32_t bitMask32[] = {
     0xFFFFFFFF,0x7FFFFFFF,0x3FFFFFFF,0x1FFFFFFF,
     0x0FFFFFFF,0x07FFFFFF,0x03FFFFFF,0x01FFFFFF,
     0x00FFFFFF,0x007FFFFF,0x003FFFFF,0x001FFFFF,
@@ -37,7 +37,7 @@ uint32_t mask32[] = {
     0x00000000
 };
 
-uint64_t mask64[] = {
+uint64_t bitMask64[] = {
     0xFFFFFFFFFFFFFFFF,0x7FFFFFFFFFFFFFFF,0x3FFFFFFFFFFFFFFF,0x1FFFFFFFFFFFFFFF,
     0x0FFFFFFFFFFFFFFF,0x07FFFFFFFFFFFFFF,0x03FFFFFFFFFFFFFF,0x01FFFFFFFFFFFFFF,
     0x00FFFFFFFFFFFFFF,0x007FFFFFFFFFFFFF,0x003FFFFFFFFFFFFF,0x001FFFFFFFFFFFFF,
@@ -65,15 +65,15 @@ uint64_t mask64[] = {
 **/
 
 // Initializes a bitvector instance 
-bitVector::bitVector(unsigned long capacity, float growth_ratio) {
+bitVector::bitVector(unsigned long cap, float growth_ratio) {
 
     assert(sizeof(TYPE) * 8 == NBITS);
 
-    cap = (capacity == 0 ? 0 : (capacity+(NBITS-1))/NBITS);
-    len = 0;
+    _cap = (cap == 0 ? 0 : (cap + (NBITS - 1)) / NBITS);
+    _size = 0;
     ratio = growth_ratio;
 
-    A = (unsigned long*) calloc(cap,sizeof(unsigned long));
+    A = (unsigned long*) calloc(_cap ,sizeof(unsigned long));
     if (!A)
         throw new bad_alloc();
 }
@@ -87,14 +87,14 @@ bitVector::~bitVector() {
 
 // allocates new space for the bitvector, returns 1 if sucess
 int bitVector::grow(unsigned long ncap) {
-    if (ncap <= cap) ncap = cap++;
+    if (ncap <= _cap) ncap = _cap++;
     TYPE* AA = (TYPE*) realloc(A, ncap * sizeof(TYPE));
     if (!AA)
         throw new bad_alloc();
-    for (unsigned long long i = cap; i < ncap; i++) 
+    for (unsigned long long i = _cap; i < ncap; i++) 
         AA[i] = 0;
     A = AA;
-    cap = ncap;
+    _cap = ncap;
     return 1;
 }
 
@@ -104,7 +104,7 @@ int bitVector::grow(unsigned long ncap) {
    If i > |A| - 1 then the behavior is undefined.
 **/
 void bitVector::set1(unsigned long i) {
-    A[i / NBITS] |= (mask(i % NBITS) ^ mask(i % NBITS + 1));
+    A[i / NBITS] |= (bitMask(i % NBITS) ^ bitMask(i % NBITS + 1));
 }
 
 /**
@@ -113,7 +113,7 @@ void bitVector::set1(unsigned long i) {
    If i > |A| - 1 then the behavior is undefined.
 **/
 void bitVector::set0(unsigned long i) {
-    A[i / NBITS] &= ~(mask(i % NBITS) ^ mask(i % NBITS + 1));
+    A[i / NBITS] &= ~(bitMask(i % NBITS) ^ bitMask(i % NBITS + 1));
 }
 
 /**
@@ -121,15 +121,25 @@ void bitVector::set0(unsigned long i) {
 
    If i > |A|-1 then the behavior is undefined.
 **/
-int bitVector::access(unsigned long i) {
-    return (A[i / NBITS] & (mask(i % NBITS) ^ mask(i % NBITS + 1))) ? 1 : 0;
+int bitVector::operator[](unsigned long i) const{
+    return (A[i / NBITS] & (bitMask(i % NBITS) ^ bitMask(i % NBITS + 1))) ? 1 : 0;
 }
 
-TYPE bitVector::accessWord(unsigned long i) {
+bool bitVector::operator==(bitVector B) const {
+    size_t thisSize = this->size();
+    size_t BSize = B.size();
+    if (thisSize != BSize) return false;
+    
+    for (size_t i = 0; i < thisSize / NBITS; i++) {
+        if (this->accessWord(i) != B.accessWord(i)) return false;
+    }
+    return true;
+}
+TYPE bitVector::accessWord(unsigned long i) const {
     return A[i];
 }
 
-TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) {
+TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) const {
     unsigned long long start = i * wordSize;    
     unsigned long long end = start + wordSize - 1;    
     unsigned long long start_index = start / NBITS;   
@@ -137,9 +147,9 @@ TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) {
     start %= NBITS;    
     end %= NBITS;
     if (start_index == end_index) {   
-        return (A[start_index] & ~mask(end + 1)) << start;
+        return (A[start_index] & ~bitMask(end + 1)) << start;
     }
-    return (A[start_index] << start) | ((A[end_index] & ~mask(end + 1)) >> (NBITS - start));
+    return (A[start_index] << start) | ((A[end_index] & ~bitMask(end + 1)) >> (NBITS - start));
 }
 
 /**
@@ -147,9 +157,9 @@ TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) {
 **/
 void bitVector::append0() {
 
-    if (len == NBITS * cap)
-        grow(cap * ratio);
-    len++;
+    if (_size == NBITS * _cap)
+        grow(_cap * ratio);
+    _size++;
 }
 
 /**
@@ -157,32 +167,29 @@ void bitVector::append0() {
 **/
 void bitVector::append1() {
 
-    if (len == NBITS*cap)
-        grow(cap * ratio);
+    if (_size == NBITS * _cap)
+        grow(_cap * ratio);
 
-    set1(len++);
+    set1(_size++);
 }
 
-unsigned long bitVector::getLength() { return len; }
-unsigned long bitVector::getCap() { return cap; }
-
-// Criar um utils?? colocar na endian????
-unsigned long bitVector::ceil(unsigned long ul) { return (ul + NBITS - 1) / NBITS; }
+unsigned long bitVector::size() const { return _size; }
+unsigned long bitVector::cap() const { return _cap; }
 
 /**
     Coloca uma sequencia predefinida de bits ao final do bitvector.
 **/
 void bitVector::extend(bitVector* B) {
-    if (cap == 0) cap = 1;
+    if (_cap == 0) _cap = 1;
 
-    while(!(this->ceil(len + B->getLength()) <= cap))
-        grow(cap * ratio);   
+    while(!((_size + B->size() + NBITS - 1) / NBITS <= _cap))
+        grow(_cap * ratio);   
 
-    short bitsSobrando = len % NBITS;
+    short bitsSobrando = _size % NBITS;
     short bitsFaltando = NBITS - bitsSobrando;
-    short cur = len/ NBITS;
+    short cur = _size / NBITS;
 
-    for (unsigned long long i = 0; i < B->ceil(B->getLength()); i++) {
+    for (unsigned long long i = 0; i < (B->size() + NBITS - 1) / NBITS; i++) {
          if (bitsSobrando == 0) {
             this->A[cur] = B->A[i];
             cur++;
@@ -192,17 +199,19 @@ void bitVector::extend(bitVector* B) {
             this->A[cur] |= B->A[i] << bitsFaltando;
         }
     }
-    this->len += B->getLength();
+    this->_size += B->size();
 }
 
 /**
     Copy a part of original bitvector into another bitvector and returns the new one.
 **/
-bitVector* bitVector::slice(unsigned long i, unsigned long k){
-    bitVector* Bnew = new bitVector(this->ceil(k), 1.5);
+bitVector* bitVector::slice(unsigned long i, unsigned long k) const {
+    bitVector* Bnew = new bitVector((k + NBITS - 1)  / NBITS, 1.5);
     for (unsigned long j = 0; j < k; j++) {
-        if (this->access(i + j)) Bnew->append1();
-        else Bnew->append0();
+        if ((*this)[i + j])
+            Bnew->append1();
+        else
+            Bnew->append0();
     }
     return Bnew;
 }
@@ -211,8 +220,8 @@ bitVector* bitVector::slice(unsigned long i, unsigned long k){
     Inserts a bit sequence in the i'th bitvector position.
 **/
 void bitVector::put(bitVector* B, unsigned long i) {
-    bitVector* endOriginal = this->slice(i, this->getLength() - i);
-    this->len = i;
+    bitVector* endOriginal = this->slice(i, this->size() - i);
+    this->_size = i;
     this->extend(B);
     this->extend(endOriginal);
     endOriginal->~bitVector();
@@ -221,10 +230,12 @@ void bitVector::put(bitVector* B, unsigned long i) {
 /**
    \brief Print the bit array on the screen.
 **/
-void bitVector::print() {
-    printf("len: %ld, cap: %ld, ratio: %f\n",len,cap,ratio);
-    for (unsigned long long i=0; i< len; i++) {
-        printf("%d",bitVector::access(i));
+void bitVector::print() const {
+    printf("len: %ld, cap: %ld, ratio: %f\n", _size, _cap, ratio);
+    for (unsigned long long i=0; i< _size; i++) {
+        printf("%d", (*this)[i]);
     }
     printf("\n\n");
 }
+
+#undef bitMask
