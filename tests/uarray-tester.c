@@ -5,7 +5,7 @@
 #include <math.h>
 
 #include "abbrevs.h"
-#include "uarray.h"
+#include "../include/GPT-originals/uarray.h"
 
 
 

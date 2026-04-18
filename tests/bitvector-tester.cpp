@@ -1,4 +1,4 @@
-#include "bitvector.h"
+#include "../include/bitvector.h"
 // #include "utils.h"
 #include <iostream>
 #include <cstdlib> //rand() & 1

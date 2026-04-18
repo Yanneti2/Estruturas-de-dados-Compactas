@@ -8,7 +8,7 @@ using namespace std;
 //#include <cstring>
 //#include <cinttypes>
 
-#include "bits.h"
+#include "GPT-originals/bits.h"
 
 
 int is_bigendian() {

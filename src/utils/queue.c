@@ -1,17 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "queue.h"
 
 // A linked list queue implementation
 
-typedef struct node{
-    int valor;
-    struct node* next;
-}node;
-
-typedef struct queue{
-    node* front; // head
-    node* rear; // tail
-}queue;
 
 // creates a empty queue
 queue* create_queue(void){

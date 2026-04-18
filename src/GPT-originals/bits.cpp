@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <cassert>
 
-#include "bits.h"
+#include "../../include/GPT-originals/bits.h"
 
 
 /**
