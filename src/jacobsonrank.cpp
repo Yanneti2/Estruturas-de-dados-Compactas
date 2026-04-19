@@ -1,20 +1,19 @@
 #include "jacobsonrank.h"
-// #include "utils.h"
 #include <iostream>
 
-#ifndef mask
+#ifndef bitMask
 #ifdef IS32BIT
-#define mask(i) mask32[(i)]
+#define bitMask(i) bitMask32[(i)]
 #else
-#define mask(i) mask64[(i)]
+#define bitMask(i) bitMask64[(i)]
 #endif
 #endif
 
 #define MIN(A, B) ((A) < (B) ? (A) : (B)) 
 #define ULL unsigned long long
 
-extern uint32_t mask32[];
-extern uint64_t mask64[];
+extern uint32_t bitMask32[];
+extern uint64_t bitMask64[];
 
 template <typename T>
 unsigned long long binary_search(T *V, T target, unsigned long long beginning, unsigned long long end) {
@@ -34,7 +33,7 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
     }
 }
 
-jacobsonRank::jacobsonRank(bitVector *B, bool fixSizeToWordSize) {
+JacobsonRank::JacobsonRank(bitVector *B, bool fixSizeToWordSize) {
     const ULL B_length = B->size();
     unsigned chunk1_size;
     unsigned chunk2_size;
@@ -46,7 +45,7 @@ jacobsonRank::jacobsonRank(bitVector *B, bool fixSizeToWordSize) {
         chunk1_size = NBITS * NBITS;
         chunk2_size = NBITS;
     } else {
-        const long double logN = log2(B_length);
+        const long double logN = log2((long double)B_length);
         chunk1_size = ceil(logN) * floor(logN);
         chunk2_size = chunk1_size / ceil(logN);
     }
@@ -77,18 +76,24 @@ jacobsonRank::jacobsonRank(bitVector *B, bool fixSizeToWordSize) {
     }
 }
 
-ULL jacobsonRank::rank1(bitVector *B, ULL i) {
+JacobsonRank::~JacobsonRank() {
+    if (layer1) free(layer1);
+    if (layer2) free(layer2);
+    if (select_vector) free(select_vector);
+}
+
+ULL JacobsonRank::rank1(bitVector *B, ULL i) {
     ULL chunk1 = i / chunk1_size;
     ULL chunk2 = i / chunk2_size;
-    unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~mask(i % chunk2_size));
+    unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~bitMask(i % chunk2_size));
     return layer1[chunk1] + layer2[chunk2] + pop_count;
 }
 
-ULL jacobsonRank::rank0(bitVector *B, ULL i) {
+ULL JacobsonRank::rank0(bitVector *B, ULL i) {
     return i - rank1(B, i);
 }
 
-void jacobsonRank::print() {
+void JacobsonRank::print() {
     std::cout << "Layer1_Size: " << layer1_size << 
         "\n" << "Layer2_Size: " << layer2_size << 
         "\n" << "Chunk1_Size: " << chunk1_size << 
@@ -105,10 +110,10 @@ void jacobsonRank::print() {
     std::cout << "\n";
 }
 
-void jacobsonRank::build_select(bitVector *B) {
+void JacobsonRank::build_select(bitVector *B) {
     const ULL B_length = B->size();
-    ULL select_j = ceil(log2(B_length) * log(B_length));
-    ULL *select_vector = (ULL *) malloc((B_length + select_j - 1) / select_j * sizeof(ULL));
+    ULL select_j = ceil(log2((long double)B_length) * log((long double)B_length));
+    ULL *select_vector = (ULL *) malloc(((B_length + select_j - 1) / select_j + 1) * sizeof(ULL));
     ULL counter = 0;
     select_vector[0] = 0;
     for (ULL i = 0; i < B->size(); i++) {
@@ -126,7 +131,7 @@ void jacobsonRank::build_select(bitVector *B) {
     this->select_vector = select_vector;
 }
 
-ULL jacobsonRank::select1(bitVector *B, ULL i) {
+ULL JacobsonRank::select1(bitVector *B, ULL i) {
     const ULL lower_bound = select_vector[i / select_j];
 
     if (i % select_j == 0) {

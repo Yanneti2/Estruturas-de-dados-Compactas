@@ -4,33 +4,42 @@
 
 #ifndef ESTRUTURAS_DE_DADOS_COMPACTAS_QUEUE_H
 #define ESTRUTURAS_DE_DADOS_COMPACTAS_QUEUE_H
-#include <stdio.h>
-#include <stdlib.h>
 
-// A linked list queue implementation
+#include <iostream>
 
-typedef struct node{
-    int valor;
-    struct node* next;
-}node;
+class Queue {
+public:
+    struct Node {
+        int valor;
+        Node* next;
 
-typedef struct queue{
-    node* front; // head
-    node* rear; // tail
-}queue;
+        Node(int val) : valor(val), next(nullptr) {}
+    };
 
-// creates a empty queue
-queue* create_queue(void);
-// push a element to the end of the queue O(1)
-void enqueue(queue* q, node* element);
+private:
+    Node* m_front; // head
+    Node* m_rear;  // tail
 
-// ejects and returns the first element of the queue O(1)
-void dequeue(queue* q);
+public:
+    // initialize as empty queue
+    Queue();
 
-// returns the first element of the queue O(1)
-node* first(queue* q);
+    // destructor frees memory
+    ~Queue();
 
-// returns the last element of the queue O(1)
-node* last(queue* q);
+    // push an element to the end of the queue O(1)
+    void enqueue(int valor);
+
+    // removes the first element of the queue O(1)
+    void dequeue();
+
+    // returns the first element of the queue O(1)
+    Node* first() const { return m_front; }
+
+    // returns the last element of the queue O(1)
+    Node* last() const { return m_rear; }
+
+    bool empty() const { return m_front == nullptr; }
+};
 
 #endif //ESTRUTURAS_DE_DADOS_COMPACTAS_QUEUE_H

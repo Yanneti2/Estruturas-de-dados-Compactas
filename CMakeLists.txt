@@ -1,13 +1,12 @@
 cmake_minimum_required(VERSION 3.30)
-project(EstruturasDeDadosCompactas CXX)
+project(EstruturasDeDadosCompactas C CXX)
 
-enable_language(C)
 
-enable_testing()
-
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-
+option(BUILD_TESTS "Habilita a compilação dos testes" ON)
 
 add_subdirectory(src)
-add_subdirectory(tests)
+
+if (BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

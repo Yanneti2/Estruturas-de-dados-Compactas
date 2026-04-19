@@ -1,24 +1,9 @@
-add_library(libdfs
-        dfs.c
+add_library(utils
+        stack.cpp
+        queue.cpp
+        ll2.cpp
+        dll.cpp
+        dfs.cpp
 )
 
-add_library(
-        libdll
-        dll.c
-)
-
-
-
-add_library(
-        libll2
-        ll2.c
-)
-
-add_library(libqueue
-        queue.c
-)
-
-
-add_library(libstack
-        stack.c
-)
+target_include_directories(utils PUBLIC ${CMAKE_SOURCE_DIR}/include)

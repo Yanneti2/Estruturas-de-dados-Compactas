@@ -7,9 +7,10 @@
 #include <stdlib.h>
 
 #include <stdexcept>
+#include <new>
 #include <cassert>
 
-#include "../../include/GPT-originals/bits.h"
+#include "GPT-originals/bits.h"
 
 
 /**
@@ -27,7 +28,7 @@ bits::bits(unsigned long capacity, float growth_ratio) {
   len = 0;
   ratio = growth_ratio;
 
-  A = calloc(cap,sizeof(unsigned long));
+  A = (unsigned long*) calloc(cap,sizeof(unsigned long));
   if (!A)
     throw new bad_alloc();
 }
@@ -44,7 +45,7 @@ int grow(unsigned long ncap) {
 
   ncap = (ncap+63)/64;
   
-  unsigned long* AA = realloc(A,ncap,sizeof(unsigned long));
+  unsigned long* AA = (unsigned long*) realloc(A,ncap,sizeof(unsigned long));
   if (!AA)
     throw new bad_alloc();
 

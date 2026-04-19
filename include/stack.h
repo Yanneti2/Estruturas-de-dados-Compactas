@@ -4,29 +4,38 @@
 
 #ifndef ESTRUTURAS_DE_DADOS_COMPACTAS_STACK_H
 #define ESTRUTURAS_DE_DADOS_COMPACTAS_STACK_H
-#include <stdio.h>
-#include <stdlib.h>
 
-// A linked list implementation of a stack
+#include <iostream>
 
-typedef struct node{
-    int valor;
-    struct node* next;
-}node;
+class Stack {
+public:
+    struct Node {
+        int valor;
+        Node* next;
 
-typedef struct stack{
-    struct node* top;
-}stack;
+        Node(int val) : valor(val), next(nullptr) {}
+    };
 
-stack* init_stack(void);
-// adds a element to the end of the stack
-void push(stack* s, int valor);
+private:
+    Node* m_top;
 
-//pops the last element of the stack
-void pop(stack* s);
+public:
+    // initialize as empty stack
+    Stack();
 
-// returns the top element of the stack
-node* last(stack* s);
+    // destructor frees the memory used by the stack
+    ~Stack();
 
+    // adds an element to the top of the stack
+    void push(int valor);
+
+    // pops the top element of the stack
+    void pop();
+
+    // returns the top element of the stack
+    Node* last() const;
+
+    bool empty() const { return m_top == nullptr; }
+};
 
 #endif //ESTRUTURAS_DE_DADOS_COMPACTAS_STACK_H

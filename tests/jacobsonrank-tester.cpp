@@ -1,6 +1,5 @@
 #include "jacobsonrank.h"
 #include "bitvector.h"
-#include "utils.h"
 #include <iostream>
 #include <chrono>
 #include <math.h>
@@ -24,7 +23,7 @@ int main(void){
             }
         }
 
-        rank *R = new rank(B1, false);
+        JacobsonRank *R = new JacobsonRank(B1, false);
 
         auto start = std::chrono::high_resolution_clock::now();
         R->build_select(B1);
@@ -42,6 +41,7 @@ int main(void){
         ms_double = end - start;
         std::cout << "Tempo de " << 4 * size / 10 << " operações select: " << ms_double.count() << " ms\n\n";
 
-        B1->~bitVector();
+        delete R;
+        delete B1;
     }
 }

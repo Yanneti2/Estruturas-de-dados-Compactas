@@ -5,45 +5,45 @@
 #ifndef ESTRUTURAS_DE_DADOS_COMPACTAS_DLL_H
 #define ESTRUTURAS_DE_DADOS_COMPACTAS_DLL_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstddef>
 
-// Double Linked List Implementation
+class DoubleLinkedList {
+public:
+    struct Node {
+        int data;
+        Node* next;
+        Node* prev;
 
-typedef struct node{
-    int data;
-    struct node* next;
-    struct node* prev;
-}node;
+        Node(int val) : data(val), next(nullptr), prev(nullptr) {}
+    };
 
-typedef struct list{
-    long size;
-    node* head;
-    node* tail;
-}list;
+private:
+    long m_size;
+    Node* m_head;
+    Node* m_tail;
 
-// creates a empty list O(1)
-list* init_list(void);
+public:
+    // creates an empty list O(1)
+    DoubleLinkedList();
 
-// frees the memory used to store the list before exiting the program
-void free_list(list* L);
+    // destructor frees the memory used to store the list
+    ~DoubleLinkedList();
 
+    // print the list in one line O(n)
+    void print() const;
 
-// printa a lista em uma linha O(n)
-void print_list(list* L);
+    // insert a node with data = valor at the beginning of the list O(1)
+    void insert(int valor);
 
+    // remove the first element of a list O(1)
+    void eject();
 
-// insere um node com data = valor no inicio da lista O(1)
-void insert(list* L, int valor);
+    // add a node to the end of the list O(1)
+    void push(int valor);
 
-// remove o primeiro elemento de uma lista O(1)
-void eject(list* L);
-
-// adds a node to the end of the list O(1)
-void push(list* L, int valor);
-
-// deletes a element at the end of the list O(1)
-void pop(list* L);
+    // delete an element at the end of the list O(1)
+    void pop();
 
 // gets the element at index and prints it O(n)
 
@@ -53,18 +53,21 @@ void pop(list* L);
 // first half of the list, search forward from the head. If it's
 // in the second half, search backward from the tail. This can cut
 // your maximum search time in half O(n/2)
-void get(list* L, size_t index);
+    void get(size_t index) const;
 
-// sets a element of data x to data = y
-void set(list* L, int x, int y);
+    // set an element of data x to data = y
+    void set(int x, int y);
 
-// inserts a element at a given position O(n)
-void insert_at(list* L, int valor, size_t index);
+    // insert an element at a given position O(n)
+    void insert_at(int valor, size_t index);
 
-// removes a element at a given position
-void remove_at(list* L, size_t index);
+    // remove an element at a given position
+    void remove_at(size_t index);
 
-// reverses the order of the dll
-void reverse(list* L);
+    // reverse the order of the dll
+    void reverse();
+
+    long size() const { return m_size; }
+};
 
 #endif //ESTRUTURAS_DE_DADOS_COMPACTAS_DLL_H

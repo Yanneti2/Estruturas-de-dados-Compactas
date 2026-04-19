@@ -5,45 +5,52 @@
 #ifndef ESTRUTURAS_DE_DADOS_COMPACTAS_LL2_H
 #define ESTRUTURAS_DE_DADOS_COMPACTAS_LL2_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstddef>
 
-// A List ADT Implementation using Linked Lists
+class LinkedList {
+public:
+    struct Node {
+        long valor;
+        Node* next;
 
-typedef struct node{
-    long valor;
-    struct node* next;
-} node;
+        Node(long val) : valor(val), next(nullptr) {}
+    };
 
-typedef struct list{
-    node* head;
-    node* tail;
-    long size;
-}list;
+private:
+    Node* m_head;
+    Node* m_tail;
+    long m_size;
 
-// initialize as empty new list L
-list* alloc_list(void);
+public:
+    // initialize as empty new list
+    LinkedList();
 
-// libera a memoria ocupada pela lista e da lista em si
-void free_list(list *L);
+    // destructor frees the memory used by the list
+    ~LinkedList();
 
-// printa a lista como esta
-void print_list(list *L);
+    // print the list as it is
+    void print() const;
 
-// cria e insere um node nnode no inicio da linked list
-void insert(list* L, long valor);
+    // create and insert a node at the beginning of the linked list
+    void insert(long valor);
 
-// deletes the element at the beggining of the list
-void eject(list* L);
+    // delete the element at the beginning of the list
+    void eject();
 
-// adds a element at the end of the list
-void push(list* L, long valor);
-// exclui o ultimo elemento da lista
-void pop(list* L);
+    // add an element at the end of the list
+    void push(long valor);
 
-// devolve o valor do elemento na posicao index
-void get(list* L, size_t index);
+    // remove the last element of the list
+    void pop();
 
-// troca o valor de um elemento com valor_antigo para valor_novo
-void set(list* L, long valor_antigo, long valor_novo);
+    // get the value of the element at position index
+    void get(size_t index) const;
+
+    // change the value of an element from old_value to new_value
+    void set(long old_value, long new_value);
+
+    long size() const { return m_size; }
+};
+
 #endif //ESTRUTURAS_DE_DADOS_COMPACTAS_LL2_H
