@@ -5,7 +5,7 @@
 
 /*
     TODO:
-    Uma funcao para appendar um long e/ou uma string a um bitvector. 
+    Uma funcao para appendar um long e/ou uma string a um bitvector.
 */
 
 #include <stdint.h>
@@ -14,6 +14,8 @@
 #include <stdexcept>
 #include <cassert>
 #include "bitvector.h"
+
+#include <cmath>
 #include <iostream>
 using namespace std;
 
@@ -61,10 +63,10 @@ uint64_t bitMask64[] = {
    A new, empty bitsequence.
 
    \param capacity The initial capacity (number of bitVector).
-   \param growth_ratio 
+   \param growth_ratio
 **/
 
-// Initializes a bitvector instance 
+// Initializes a bitvector instance
 bitVector::bitVector(unsigned long cap, float growth_ratio) {
 
     assert(sizeof(TYPE) * 8 == NBITS);
@@ -73,7 +75,7 @@ bitVector::bitVector(unsigned long cap, float growth_ratio) {
     _size = 0;
     ratio = growth_ratio;
 
-    A = (unsigned long*) calloc(_cap ,sizeof(unsigned long));
+    A = (TYPE*) calloc(_cap ,sizeof(unsigned long));
     if (!A)
         throw new bad_alloc();
 }
@@ -87,10 +89,14 @@ bitVector::~bitVector() {
 
 // allocates new space for the bitvector, returns 1 if sucess
 int bitVector::grow(unsigned long ncap) {
-    if (ncap <= _cap) ncap = _cap++;
+    if (ncap <= _cap)
+    {
+        // If cap > new cap there is nothing to do.
+        return 1;
+    };
     TYPE* AA = (TYPE*) realloc(A, ncap * sizeof(TYPE));
     if (!AA)
-        throw new bad_alloc();
+        throw bad_alloc();
     for (unsigned long long i = _cap; i < ncap; i++) 
         AA[i] = 0;
     A = AA;
@@ -129,7 +135,7 @@ bool bitVector::operator==(bitVector B) const {
     size_t thisSize = this->size();
     size_t BSize = B.size();
     if (thisSize != BSize) return false;
-    
+
     for (size_t i = 0; i < thisSize / NBITS; i++) {
         if (this->accessWord(i) != B.accessWord(i)) return false;
     }
@@ -140,13 +146,13 @@ TYPE bitVector::accessWord(unsigned long i) const {
 }
 
 TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) const {
-    unsigned long long start = i * wordSize;    
-    unsigned long long end = start + wordSize - 1;    
-    unsigned long long start_index = start / NBITS;   
-    unsigned long long end_index = end / NBITS;   
-    start %= NBITS;    
+    unsigned long long start = i * wordSize;
+    unsigned long long end = start + wordSize - 1;
+    unsigned long long start_index = start / NBITS;
+    unsigned long long end_index = end / NBITS;
+    start %= NBITS;
     end %= NBITS;
-    if (start_index == end_index) {   
+    if (start_index == end_index) {
         return (A[start_index] & ~bitMask(end + 1)) << start;
     }
     return (A[start_index] << start) | ((A[end_index] & ~bitMask(end + 1)) >> (NBITS - start));
@@ -158,7 +164,13 @@ TYPE bitVector::accessWord(unsigned long i, unsigned wordSize) const {
 void bitVector::append0() {
 
     if (_size == NBITS * _cap)
-        grow(_cap * ratio);
+    {
+        unsigned long new_cap = ceil(_cap * ratio);
+        if (new_cap <= _cap)
+            new_cap = _cap + 1;
+        grow(new_cap);
+    }
+
     _size++;
 }
 
@@ -168,7 +180,12 @@ void bitVector::append0() {
 void bitVector::append1() {
 
     if (_size == NBITS * _cap)
-        grow(_cap * ratio);
+    {
+        unsigned long new_cap = ceil(_cap * ratio);
+        if (new_cap <= _cap)
+            new_cap = _cap + 1;
+        grow(new_cap);
+    }
 
     set1(_size++);
 }
@@ -183,7 +200,12 @@ void bitVector::extend(bitVector* B) {
     if (_cap == 0) _cap = 1;
 
     while(!((_size + B->size() + NBITS - 1) / NBITS <= _cap))
-        grow(_cap * ratio);   
+    {
+        unsigned long new_cap = (unsigned long) ceil(_cap * ratio);
+        if (new_cap <= _cap)
+            new_cap = _cap + 1;
+        grow(new_cap);
+    }
 
     short bitsSobrando = _size % NBITS;
     short bitsFaltando = NBITS - bitsSobrando;
@@ -207,6 +229,8 @@ void bitVector::extend(bitVector* B) {
 **/
 bitVector* bitVector::slice(unsigned long i, unsigned long k) const {
     bitVector* Bnew = new bitVector((k + NBITS - 1)  / NBITS, 1.5);
+    if (i + k > _size)
+        throw std::out_of_range("slice out of bounds");
     for (unsigned long j = 0; j < k; j++) {
         if ((*this)[i + j])
             Bnew->append1();
@@ -224,7 +248,7 @@ void bitVector::put(bitVector* B, unsigned long i) {
     this->_size = i;
     this->extend(B);
     this->extend(endOriginal);
-    endOriginal->~bitVector();
+    delete endOriginal;
 }
 
 /**
