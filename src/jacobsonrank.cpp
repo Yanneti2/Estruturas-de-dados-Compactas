@@ -51,7 +51,7 @@ JacobsonRank::JacobsonRank(bitVector *B, bool fixSizeToWordSize) {
     }
     layer1_size = (B_length + chunk1_size - 1) / chunk1_size;
     chunk2_per_chunk1 = (chunk1_size + chunk2_size - 1) / chunk2_size;
-    layer2_size = chunk2_per_chunk1 * (layer1_size - 1) + (B_length % chunk1_size + chunk2_size - 1) / chunk2_size + 1;
+    layer2_size = chunk2_per_chunk1 * layer1_size;
 
     this->chunk1_size = chunk1_size;
     this->chunk2_size = chunk2_size;
