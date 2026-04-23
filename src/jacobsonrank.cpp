@@ -1,4 +1,4 @@
-#include "jacobsonrank.h"
+#include "../include/jacobsonrank.h"
 #include <iostream>
 
 #ifndef bitMask

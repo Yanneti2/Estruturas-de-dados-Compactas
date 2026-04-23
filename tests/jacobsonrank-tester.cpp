@@ -1,5 +1,5 @@
-#include "jacobsonrank.h"
-#include "bitvector.h"
+#include "../include/jacobsonrank.h"
+#include "../include/bitvector.h"
 #include <iostream>
 #include <chrono>
 #include <math.h>
