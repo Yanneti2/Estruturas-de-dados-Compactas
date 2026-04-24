@@ -41,12 +41,13 @@ int main(void){
 		    }
 		}
 		auto R1 = JacobsonRank(&B1);
+		#ifdef selectstructure
 		auto start = std::chrono::high_resolution_clock::now();
 		R1.build_select1(&B1);
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double, std::milli> ms_double = end - start;
 		std::cout << "Tempo de construção da estrutura de select1 de ordem "  << ordem << ": "<< ms_double.count() << " ms\n";
-
+		#endif
 		start = std::chrono::high_resolution_clock::now();
 		for (int i = 0; i < 4 * size / 10; i++)
 		{
@@ -70,11 +71,13 @@ int main(void){
 		    }
 		}
 		auto R2 = JacobsonRank(&B2);
+		#ifdef selectstructure
 		auto start = std::chrono::high_resolution_clock::now();
 		R2.build_select0(&B2);
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double, std::milli> ms_double = end - start;
 		std::cout << "Tempo de construção da estrutura de select0 de ordem "  << ordem << ": "<< ms_double.count() << " ms\n";
+		#endif
 		start = std::chrono::high_resolution_clock::now();
 		for (int i = 0; i < 4 * size / 10; i++)
 		{
