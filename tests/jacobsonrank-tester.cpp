@@ -1,4 +1,4 @@
-#include "../include/jacobsonrank.h"
+#include "../include/jacobsonrank.h" 
 #include "../include/bitvector.h"
 #include <iostream>
 #include <chrono>
@@ -9,6 +9,26 @@
 //usar de ref len NBIS
 
 int main(void){
+	string ss = " NAO ";
+	std::cout << "\n";
+	std::cout << "===============================================================" << std::endl;
+	std::cout << "OS TESTES A SEGUIR USARAM CHUNK SIZE: "; 
+#ifdef _nbits
+	std::cout << "NBITS e NBITS*NBITS" << std::endl;
+#endif
+#ifdef _nbits512
+	std::cout << "NBITS e 512*NBITS" << std::endl;
+#endif
+#ifdef _log
+	std::cout << "logN e logN*logN" << std::endl;
+#endif
+#ifdef selectstructure
+	ss = " ";
+#endif
+	std::cout << "\n\n";
+	std::cout << "ALEM DISSO, ELES" << ss << "USARAM A ESTRUTURA AUXILIAR DE SELECT" << std::endl;
+	std::cout << "===============================================================" << std::endl;
+	std::cout << "\n\n\n";
 	for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
 		auto B1 = bitVector(64,2.0);
 		int ordem = log10(size);

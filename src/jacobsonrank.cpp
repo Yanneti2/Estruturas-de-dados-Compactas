@@ -164,15 +164,18 @@ void JacobsonRank::build_select0(bitVector *B) {
     this->select_vector0 = select_vector0;
 }
 
-// g++ -D selectstructure
+// g++ -D selectstructure (ss??)
 ULL JacobsonRank::select0(bitVector *B, ULL i) {
+    #ifdef selectstructure
     const ULL lower_bound = select_vector0[i / select_j];
-
+    const ULL upper_bound = select_vector0[i / select_j + 1];
+    #else
+    const ULL lower_bound = 0; 
+    const ULL upper_bound = B->size();
+    #endif
     if (i % select_j == 0) {
         return lower_bound; 
     }
-
-    const ULL upper_bound = select_vector0[i / select_j + 1];
     const ULL layer1_pos = binary_search(layer1, i, lower_bound / chunk1_size, (upper_bound - 1) / chunk1_size);
     const ULL layer2_pos = binary_search(layer2, (short) (i - layer1[layer1_pos]), layer1_pos * chunk2_per_chunk1, MIN((layer1_pos + 1) * chunk2_per_chunk1 - 1, layer2_size - 1));
 
@@ -190,13 +193,16 @@ ULL JacobsonRank::select0(bitVector *B, ULL i) {
 }
 
 ULL JacobsonRank::select1(bitVector *B, ULL i) {
+    #ifdef selectstructure
     const ULL lower_bound = select_vector1[i / select_j];
-
+    const ULL upper_bound = select_vector1[i / select_j + 1];
+    #else
+    const ULL lower_bound = 0;
+    const ULL upper_bound = B->size();
+    #endif
     if (i % select_j == 0) {
         return lower_bound; 
     }
-
-    const ULL upper_bound = select_vector1[i / select_j + 1];
     const ULL layer1_pos = binary_search(layer1, i, lower_bound / chunk1_size, (upper_bound - 1) / chunk1_size);
     const ULL layer2_pos = binary_search(layer2, (short) (i - layer1[layer1_pos]), layer1_pos * chunk2_per_chunk1, MIN((layer1_pos + 1) * chunk2_per_chunk1 - 1, layer2_size - 1));
 
