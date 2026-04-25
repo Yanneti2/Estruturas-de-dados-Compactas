@@ -7,7 +7,7 @@ using namespace std;
 class Gtree{
 	public:
 		typedef struct gNode{
-			bool marked;
+			//bool marked;
 			vector<gNode*> Children;
 		}gNode;
 
@@ -18,7 +18,7 @@ class Gtree{
 		void add_node(gNode* into, gNode* dummy);
 		void print_tree(gNode* root);
 		gNode* getRoot();
-		bool getMarked();
+		//bool getMarked();
 		vector<gNode*> getChildren();
 		bool isEmpty(gNode* root);
 	private:

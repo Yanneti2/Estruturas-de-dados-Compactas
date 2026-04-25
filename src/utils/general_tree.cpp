@@ -1,5 +1,5 @@
-#include "binary_tree.h" 
-#include "general_tree.h"
+#include "../../include/binary_tree.h" 
+#include "../../include/general_tree.h"
 #include <queue>
 #include <vector>
 using namespace std;
@@ -7,7 +7,7 @@ using namespace std;
 // builds a new Tree initializating the root
 Gtree::Gtree(){
 	this->root = new gNode();
-	this->root->marked = false;
+	//this->root->marked = false;
 }	
 
 // frees the memory of the existing now old tree
@@ -32,7 +32,7 @@ Gtree::~Gtree(){
 bool Gtree::isEmpty(gNode* root){ if (root) return 0; else return 1; } 
 
 // returns true or false if node marked
-bool Gtree::getMarked(){ return this->root->marked; }
+//bool Gtree::getMarked(){ return this->root->marked; }
 
 // Return the root of the given existen Tree
 Gtree::gNode* Gtree::getRoot(){ return this->root; }
@@ -40,7 +40,7 @@ Gtree::gNode* Gtree::getRoot(){ return this->root; }
 // Create and returns a new node
 Gtree::gNode* Gtree::create_node(){
 	gNode* nnode = new gNode();
-	nnode->marked = false;
+	//nnode->marked = false;
 	return nnode;
 }
 
