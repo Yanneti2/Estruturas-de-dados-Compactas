@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include <cassert>
-#include "bitvector.h"
+#include "../include/bitvector.h"
 
 #include <cmath>
 #include <iostream>
