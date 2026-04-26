@@ -50,16 +50,19 @@ WaveletTree::WaveletTree(string S, WaveletTree* dad) {
     }
     this->freq = vector;
     if(LSS.size()) {
-        this->l = &WaveletTree(LSS, this);
+        this->l = new WaveletTree(LSS, this);
     }
     if(RSS.size()) {
-        this->r = &WaveletTree(RSS, this);
+        this->r = new WaveletTree(RSS, this);
     }
 }
 
 
 WaveletTree::~WaveletTree() {
-    
+    delete this->d;
+    delete this->r;
+    delete this->l;
+    this->freq.~bitVector();
 }
 
 unsigned long long WaveletTree::rank() {

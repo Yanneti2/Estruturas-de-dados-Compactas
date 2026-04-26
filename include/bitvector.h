@@ -33,7 +33,7 @@ public:
     size_t cap() const;
 
     // Methods implemented by GPT (originals and modded)
-    bitVector(unsigned long capacity, float growth_ratio);
+    bitVector(unsigned long capacity = 1, float growth_ratio = 2);
     ~bitVector();
 
     void append0();
