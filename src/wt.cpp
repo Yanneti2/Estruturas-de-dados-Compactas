@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 #include "wt.h"
-#include "..\include\bitvector.h"
 #include <map>
+#include "../include/bitvector.h"
 #include <algorithm>
 
 using namespace std;
@@ -18,6 +18,7 @@ map<char, bool> Hashing(string S) {
 }
 
 WaveletTree::WaveletTree(string S, WaveletTree* dad) {
+    cout << S << "\n";
     this->d = dad;
     map<char, bool> chars = Hashing(S);
     string alpha;
@@ -70,3 +71,4 @@ unsigned long long WaveletTree::rank() {
 
 unsigned long long WaveletTree::select() {
 }
+
