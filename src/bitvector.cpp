@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include <cassert>
-#include "bitvector.h"
+#include "../include/bitvector.h"
 
 #include <cmath>
 #include <iostream>
@@ -190,8 +190,8 @@ void bitVector::append1() {
     set1(_size++);
 }
 
-unsigned long bitVector::size() const { return _size; }
-unsigned long bitVector::cap() const { return _cap; }
+size_t bitVector::size() const { return _size; }
+size_t bitVector::cap() const { return _cap; }
 
 /**
     Coloca uma sequencia predefinida de bits ao final do bitvector.
