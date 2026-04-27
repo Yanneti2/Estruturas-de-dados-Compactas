@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include "..\include\wt.h"
 #include <map>
+#include "../include/bitvector.h"
 #include <algorithm>
 
 using namespace std;
