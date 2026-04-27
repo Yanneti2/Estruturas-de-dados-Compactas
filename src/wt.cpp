@@ -80,9 +80,15 @@ void WaveletTree::teste(){
 
 
 WaveletTree::~WaveletTree() {
+    if (this->l != NULL) {
+        this->l->~WaveletTree();
+        delete this->l;
+    }
+    if(this->r != NULL) {
+        this->r->~WaveletTree();
+        delete this->r;
+    }
     delete this->d;
-    delete this->r;
-    delete this->l;
     this->freq.~bitVector();
 }
 
