@@ -291,4 +291,91 @@ bitVector bitVector::operator>>(unsigned long i) const{
     return newBitV;
 }
 
+bool bitVector::issameSize(bitVector B) const{
+    if(this->size() != B.size()) {
+        return false;
+    }
+    return true;
+}
+
+bitVector bitVector::operator&(bitVector B) const{
+    if(!(this->issameSize(B))) {
+        throw runtime_error("Tamanhos diferentes");
+    }
+
+    bitVector newB = bitVector(this->cap(), this->ratio);
+    for (int64_t i = 0; i < this->size(); i++) {
+        if ((*this)[i] and B[i]) 
+            newB.append1();
+        else    
+            newB.append0();
+    }
+    return newB;
+}   
+
+bitVector bitVector::operator|(bitVector B) const{
+    if(!(this->issameSize(B))) {
+        throw runtime_error("Tamanhos diferentes");
+    }
+    bitVector newB = bitVector(this->cap(), this->ratio);
+    for(uint64_t i; i < this->size(); i++) {
+        if((*this)[i] or B[i]) {
+            newB.append1();
+        }
+        else
+            newB.append0();
+    }
+    return newB;
+}
+
+bitVector bitVector::operator^(bitVector B) const{
+    if(!(this->issameSize(B))) {
+        throw runtime_error("Tamanhos diferentes");
+    }
+    bitVector newB = bitVector(this->cap(), this->ratio);
+    for(uint64_t i; i < this->size(); i++) {
+        if(((*this)[i] or B[i]) and (!((*this)[i]) or !(B[i]))) {
+            newB.append1();
+        }
+        else
+            newB.append0();
+    }
+    return newB;
+}
+
+bitVector bitVector::operator~() const{
+   bitVector newB = bitVector(this->cap(), this->ratio);
+    for(uint64_t i = 0; i < this->size(); i++) {
+        if(((*this)[i])) {
+            newB.append0();
+        }
+        else
+            newB.append1();
+    }
+    return newB;
+}
+
 #undef bitMask
+
+int main(void) {
+    size_t cap;
+    float ratio;
+    cout << "Digite o ratio: ";
+    cin >> ratio;
+    cout << "Digite o cap: ";
+    cin >> cap;
+    int aux;
+    bitVector bv = bitVector(cap, ratio);
+    cout << "Digite o bitvector: ";
+    for(auto i = 0; i < cap; i++) {
+        cin >> aux;
+        if(aux) {
+            bv.append1();
+        }
+        else
+            bv.append0();
+    }
+    bv.print();
+    bitVector bv2 = bv << 2;
+    bv2.print();
+}
