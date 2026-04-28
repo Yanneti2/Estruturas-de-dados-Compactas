@@ -29,7 +29,8 @@ int main(void){
 	std::cout << "ALEM DISSO, ELES" << ss << "USARAM A ESTRUTURA AUXILIAR DE SELECT" << std::endl;
 	std::cout << "===============================================================" << std::endl;
 	std::cout << "\n\n\n";
-	for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
+	//size < 10000000000
+	for (long long unsigned size = 1000; size < 1000000; size *= 10) {
 		auto B1 = bitVector(64,2.0);
 		int ordem = log10(size);
 
@@ -53,6 +54,7 @@ int main(void){
 		{
 		    unsigned long long foo = 1 + (foo > 1 ? rand() % (4 * size / 10) : 0);
 		    R1.select1(&B1, foo);
+			// B1::naive_select1(foo);
 		}
 		end = std::chrono::high_resolution_clock::now();
 		ms_double = end - start;
@@ -83,6 +85,7 @@ int main(void){
 		{
 		    unsigned long long foo = rand() % (4 * size / 10);
 		    R2.select0(&B2, foo);
+			// B2::naive_select0(foo);
 		}
 		end = std::chrono::high_resolution_clock::now();
 		ms_double = end - start;
@@ -105,6 +108,7 @@ int main(void){
 		for (int i = 0; i < 4 * size /10; i++) {
 			unsigned long long foo = rand() % (4*size/10);
 			R3.rank1(&B3,foo);
+			// B3::naive_rank1(foo);
 		}
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double, std::milli> ms_double = end - start;
@@ -127,6 +131,7 @@ int main(void){
 		for (int i = 0; i < 4 * size /10; i++) {
 			unsigned long long foo = rand() % (4*size/10);
 			R4.rank0(&B4,foo);
+			// B4::naive_rank0(foo);
 		}
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double, std::milli> ms_double = end - start;

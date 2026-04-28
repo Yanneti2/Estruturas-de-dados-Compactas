@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <cassert>
 #include "../include/bitvector.h"
+#include "../include/jacobsonrank.h"
 
 #include <cmath>
 #include <iostream>
@@ -26,6 +27,8 @@ using namespace std;
 #define bitMask(i) bitMask64[(i)]
 #endif
 #endif
+
+#define ULL unsigned long long
 
 uint32_t bitMask32[] = {
     0xFFFFFFFF,0x7FFFFFFF,0x3FFFFFFF,0x1FFFFFFF,
@@ -262,4 +265,81 @@ void bitVector::print() const {
     printf("\n\n");
 }
 
+unsigned long bitVector::popcount(){
+    unsigned long pop_count = 0; 
+    for(unsigned long i = 0; i < _size; i++){
+        pop_count += std::__popcount(accessWord(i));
+    }
+    return pop_count;
+}
+
+unsigned long bitVector::naive_rank1(unsigned long long i){
+    unsigned pop_count = 0;
+    unsigned long j;
+    for(j = 0; j < (i - 1)/NBITS; j++){
+        //unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~bitMask(i % chunk2_size));
+        // & ~bitMask(i%B->size())
+        pop_count += std::__popcount(accessWord(i));
+    }
+    // pop_count += std::__popcount(accessWord(_size - i));
+    pop_count += std::__popcount(accessWord(j) & ~bitMask(i % NBITS));
+    return pop_count;
+}
+
+unsigned long bitVector::naive_rank0(unsigned long long i){
+    return i - naive_rank1(i); 
+}
+
+ULL bitVector::select1(ULL i){
+    return rank->select1(this, i);
+}
+
+ULL bitVector::select0(ULL i){
+    return rank->select0(this, i);
+}
+    
+void bitVector::JacobsonRank_build(){
+    //if(rank){delete rank;}
+    rank = new JacobsonRank(this);
+}
+
+unsigned long long bitVector::rank0(unsigned long long i){
+    return rank->rank0(this, i);
+}
+
+unsigned long long bitVector::rank1(unsigned long long i){
+    return rank->rank1(this, i);
+}
+
+void bitVector::print_rank(){
+    rank->print();
+}
+
+void bitVector::build_select0(){
+    rank->build_select0(this);
+}
+
+void bitVector::build_select1(){
+    rank->build_select1(this);
+}
+
+unsigned long bitVector::naive_select1(unsigned long long i){
+    unsigned long pop_count = 0;
+    unsigned long j;
+    for(j = 0; j < _size; j++){
+        if(pop_count == i) return j;
+        pop_count += (*this) [j];
+    }
+    return -1;
+}
+
+unsigned long bitVector::naive_select0(unsigned long long i){
+    unsigned long counter = 0;
+    unsigned long j = 0;
+    for(j = 0;  j < _size; j++){
+        if((j - counter) == i) return j;
+        counter += (*this) [j];
+    }
+    return -1;
+}
 #undef bitMask

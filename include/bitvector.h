@@ -18,19 +18,22 @@
 
 using namespace std;
 
+class JacobsonRank;
+
 class bitVector {
     // TODO: *a should be unsigned long???
 private:
     TYPE *A;   // The bitvector itself
-    size_t _cap;  // The number of words of A.
-    size_t _size;  // The lenght of the bit sequence (logical). 
-    float ratio;        // The growing factor;
+    unsigned long _cap;  // The number of words of A.
+    unsigned long _size;  // The lenght of the bit sequence (logical). 
+    float ratio;        // The growing factor.
+    JacobsonRank *rank; // The rank structure.
 
 public:
     // Methods implemented post GPT (originals by stringers)
     int grow(unsigned long ncap);
-    size_t size() const;
-    size_t cap() const;
+    unsigned long size() const;
+    unsigned long cap() const;
 
     // Methods implemented by GPT (originals and modded)
     bitVector(unsigned long capacity, float growth_ratio);
@@ -55,6 +58,22 @@ public:
     void append(unsigned long number, unsigned long k);
 
     void print() const;
+
+    unsigned long naive_rank1(unsigned long long i);
+    unsigned long naive_rank0(unsigned long long i);
+    unsigned long naive_select1(unsigned long long i);
+    unsigned long naive_select0(unsigned long long i);
+    unsigned long popcount();
+
+    unsigned long long select1(unsigned long long i);
+    unsigned long long select0(unsigned long long i);
+    void JacobsonRank_build();
+    unsigned long long rank0(unsigned long long i);
+    unsigned long long rank1(unsigned long long i);
+    void print_rank();
+
+    void build_select0();
+    void build_select1();
 };
 
 #endif
