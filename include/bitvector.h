@@ -42,7 +42,8 @@ public:
     void set1(unsigned long i);
     void extend(bitVector *B);
     void put(bitVector *B, unsigned long i);
-
+    bitVector operator>>(unsigned long i) const;
+    bitVector operator<<(unsigned long i) const;
     bool operator==(bitVector B) const;
     int  operator[](unsigned long i) const;
     TYPE accessWord(unsigned long i) const;
