@@ -39,7 +39,7 @@ public:
     // Methods implemented by GPT (originals and modded)
     bitVector(unsigned long capacity = 1, float growth_ratio = 2);
     ~bitVector();
-
+    bool issameSize(bitVector B) const;
     void append0();
     void append1();
     void set0(unsigned long i);
@@ -48,6 +48,10 @@ public:
     void put(bitVector *B, unsigned long i);
     bitVector operator>>(unsigned long i) const;
     bitVector operator<<(unsigned long i) const;
+    bitVector operator&(bitVector B) const;
+    bitVector operator|(bitVector B) const;
+    bitVector operator~() const;
+    bitVector operator^(bitVector B) const;
     bool operator==(bitVector B) const;
     int  operator[](unsigned long i) const;
     TYPE accessWord(unsigned long i) const;
