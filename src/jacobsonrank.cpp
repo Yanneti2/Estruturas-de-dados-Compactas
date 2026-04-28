@@ -33,7 +33,7 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
     }
 }
 
-// g++ -D _nbits, _log, _nbits512
+g++ -D _nbits, _log, _nbits512
 JacobsonRank::JacobsonRank(bitVector *B) {
     const ULL B_length = B->size();
     unsigned chunk1_size;

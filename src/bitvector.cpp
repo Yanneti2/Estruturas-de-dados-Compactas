@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <cassert>
 #include "../include/bitvector.h"
+#include "../src/jacobsonrank.cpp"
 
 #include <cmath>
 #include <iostream>
@@ -141,6 +142,7 @@ bool bitVector::operator==(bitVector B) const {
     }
     return true;
 }
+
 TYPE bitVector::accessWord(unsigned long i) const {
     return A[i];
 }
@@ -260,6 +262,83 @@ void bitVector::print() const {
         printf("%d", (*this)[i]);
     }
     printf("\n\n");
+}
+
+unsigned long bitVector::popcount(){
+    unsigned long pop_count = 0; 
+    for(unsigned long i = 0; i < _size; i++){
+        pop_count += std::__popcount(accessWord(i));
+    }
+    return pop_count;
+}
+
+unsigned long bitVector::naive_rank1(unsigned long long i){
+    unsigned pop_count = 0;
+    unsigned long j;
+    for(j = 0; j < (i - 1)/NBITS; j++){
+        //unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~bitMask(i % chunk2_size));
+        // & ~bitMask(i%B->size())
+        pop_count += std::__popcount(accessWord(i));
+    }
+    // pop_count += std::__popcount(accessWord(_size - i));
+    pop_count += std::__popcount(accessWord(j) & ~bitMask(i % NBITS));
+    return pop_count;
+}
+
+unsigned long bitVector::naive_rank0(unsigned long long i){
+    return i - naive_rank1(i); 
+}
+
+ULL bitVector::select1(ULL i){
+    return rank.select1(this, i);
+}
+
+ULL bitVector::select0(ULL i){
+    return rank.select0(this, i);
+}
+    
+void JacobsonRank_build(){
+    return rank.JacobsonRank(this);
+}
+
+unsigned long long rank0(unsigned long long i){
+    return rank.rank0(this, i);
+}
+
+unsigned long long rank1(unsigned long long i){
+    return rank.rank1(this, i);
+}
+
+void print(){
+    return rank.print(this);
+}
+
+void build_select0(){
+    return rank.select0(this);
+}
+
+void build_select1(){
+    return rank.select1(this);
+}
+
+unsigned long bitVector::naive_select1(unsigned long long i){
+    unsigned long pop_count = 0;
+    unsigned long j;
+    for(j = 0; j < _size; j++){
+        pop_count += std::__popcount(accessWord(i));
+        if(pop_count == i) return j;
+    }
+    return -1; //?
+}
+
+unsigned long bitVector::naive_select0(unsigned long long i){
+    unsigned long counter = 0;
+    unsigned long j = 0;
+    for(j = 0; j < _size; j++){
+        if(A[j] == 0 && counter != i)
+            counter++;
+    }
+    return j;
 }
 
 #undef bitMask
