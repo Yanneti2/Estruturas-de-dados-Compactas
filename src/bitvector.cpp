@@ -194,8 +194,8 @@ void bitVector::append1() {
     set1(_size++);
 }
 
-size_t bitVector::size() const { return _size; }
-size_t bitVector::cap() const { return _cap; }
+unsigned long bitVector::size() const { return _size; }
+unsigned long bitVector::cap() const { return _cap; }
 
 /**
     Coloca uma sequencia predefinida de bits ao final do bitvector.
@@ -371,4 +371,69 @@ bitVector bitVector::operator>>(unsigned long i) const{
     }
     return newBitV;
 }
+
+bool bitVector::issameSize(bitVector B) const{
+    if(this->size() != B.size()) {
+        return false;
+    }
+    return true;
+}
+
+bitVector bitVector::operator&(bitVector B) const{
+    if(!(this->issameSize(B))) {
+        throw runtime_error("Tamanhos diferentes");
+    }
+
+    bitVector newB = bitVector(this->cap(), this->ratio);
+    for (int64_t i = 0; i < this->size(); i++) {
+        if ((*this)[i] and B[i]) 
+            newB.append1();
+        else    
+            newB.append0();
+    }
+    return newB;
+}   
+
+bitVector bitVector::operator|(bitVector B) const{
+    if(!(this->issameSize(B))) {
+        throw runtime_error("Tamanhos diferentes");
+    }
+    bitVector newB = bitVector(this->cap(), this->ratio);
+    for(uint64_t i; i < this->size(); i++) {
+        if((*this)[i] or B[i]) {
+            newB.append1();
+        }
+        else
+            newB.append0();
+    }
+    return newB;
+}
+
+bitVector bitVector::operator^(bitVector B) const{
+    if(!(this->issameSize(B))) {
+        throw runtime_error("Tamanhos diferentes");
+    }
+    bitVector newB = bitVector(this->cap(), this->ratio);
+    for(uint64_t i; i < this->size(); i++) {
+        if(((*this)[i] or B[i]) and (!((*this)[i]) or !(B[i]))) {
+            newB.append1();
+        }
+        else
+            newB.append0();
+    }
+    return newB;
+}
+
+bitVector bitVector::operator~() const{
+   bitVector newB = bitVector(this->cap(), this->ratio);
+    for(uint64_t i = 0; i < this->size(); i++) {
+        if(((*this)[i])) {
+            newB.append0();
+        }
+        else
+            newB.append1();
+    }
+    return newB;
+}
+
 #undef bitMask
