@@ -52,7 +52,7 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
             return end - 1;
         }
         unsigned long long middle = (beginning + end) / 2;
-        if (V[middle] <= target) {
+        if (V[middle] < target) {
             beginning = middle + 1;
         } else {
             end = middle;
@@ -70,7 +70,7 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
             return end - 1;
         }
         unsigned long long middle = (beginning + end) / 2;
-        if (factor * middle - V[middle] <= target) {
+        if (factor * middle - V[middle] < target) {
             beginning = middle + 1;
         } else {
             end = middle;
@@ -136,6 +136,7 @@ unsigned long long RRR::rank0(unsigned long long i) {
 }
 unsigned long long RRR::select1(bitVector *B, unsigned long long i) {
     if (i > rank1(B->size())) return -1;
+    if (i == 0) return 0;
     const unsigned long long pos = binary_search(partial_ranks, i, 0, (B->size() + block_size - 1) / block_size);
     unsigned long long select = pos * block_size;
     long long target = i - partial_ranks[pos];
@@ -151,6 +152,7 @@ unsigned long long RRR::select1(bitVector *B, unsigned long long i) {
 }
 unsigned long long RRR::select0(bitVector *B, unsigned long long i) {
     if (i > rank0(B->size())) return -1;
+    if (i == 0) return 0;
     const unsigned long long pos = binary_search(partial_ranks, i, 0, (B->size() + block_size - 1) / block_size, block_size);
     unsigned long long select = pos * block_size;
     long long target = i - select + partial_ranks[pos];
