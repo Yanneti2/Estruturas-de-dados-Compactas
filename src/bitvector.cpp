@@ -261,7 +261,7 @@ void bitVector::put(bitVector* B, unsigned long i) {
 void bitVector::print() const {
     printf("len: %ld, cap: %ld, ratio: %f\n", _size, _cap, ratio);
     for (unsigned long long i=0; i< _size; i++) {
-        printf("%d", (*this)[i]);
+        printf("%d ", (*this)[i]);
     }
     printf("\n\n");
 }
@@ -342,5 +342,33 @@ unsigned long bitVector::naive_select0(unsigned long long i){
         counter += (*this) [j];
     }
     return -1;
+}
+
+bitVector bitVector::operator<<(unsigned long i) const{
+    bitVector newBitV = bitVector(this->cap(), this->ratio);
+    // 0 0 1 0 0 << 2 1 0 0 0 0 
+    for (int64_t I = i; I < this->size(); I++) {
+        if((*this)[I])
+            newBitV.append1();
+        else
+            newBitV.append0();
+        }
+    for (int64_t I = 0; I < i; I++)
+        newBitV.append0();
+    return newBitV;
+}
+
+bitVector bitVector::operator>>(unsigned long i) const{
+    bitVector newBitV = bitVector(this->cap(), this->ratio);
+    for (int64_t I = 0; I < i; I++)
+        newBitV.append0();
+    for (int64_t I = 0; I < this->size() - i; I++) {
+        if((*this)[I]) {
+            newBitV.append1();
+        }
+        else
+            newBitV.append0();
+    }
+    return newBitV;
 }
 #undef bitMask
