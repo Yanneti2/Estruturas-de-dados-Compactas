@@ -1,4 +1,5 @@
 #include "../include/jacobsonrank.h"
+#include "../include/bitvector.h"
 #include <iostream>
 
 #ifndef bitMask
@@ -31,6 +32,9 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
             end = middle;
         }
     }
+}
+
+JacobsonRank::JacobsonRank(){   
 }
 
 // g++ -D _nbits, _log, _nbits512
@@ -73,7 +77,7 @@ JacobsonRank::JacobsonRank(bitVector *B) {
 
     ULL layer1_counter = 0;
     ULL layer2_counter = 0;
-    for (ULL i = 0; i < layer2_size; i++) {
+    for(ULL i = 0; i < layer2_size; i++) {
         if (i % chunk2_per_chunk1 == 0) {
             this->layer1[i / chunk2_per_chunk1] = layer1_counter;
             layer2_counter = 0;
@@ -196,16 +200,15 @@ ULL JacobsonRank::select1(bitVector *B, ULL i) {
     #ifdef selectstructure
     const ULL lower_bound = select_vector1[i / select_j];
     const ULL upper_bound = select_vector1[i / select_j + 1];
+    if (i % select_j == 0) {
+        return lower_bound; 
+    }
     #else
     const ULL lower_bound = 0;
     const ULL upper_bound = B->size();
     #endif
-    if (i % select_j == 0) {
-        return lower_bound; 
-    }
-    const ULL layer1_pos = binary_search(layer1, i, lower_bound / chunk1_size, (upper_bound - 1) / chunk1_size);
-    const ULL layer2_pos = binary_search(layer2, (short) (i - layer1[layer1_pos]), layer1_pos * chunk2_per_chunk1, MIN((layer1_pos + 1) * chunk2_per_chunk1 - 1, layer2_size - 1));
-
+    const ULL layer1_pos = binary_search(layer1, i, lower_bound / chunk1_size, (upper_bound + chunk1_size - 1) / chunk1_size);
+    const ULL layer2_pos = binary_search(layer2, (short) (i - layer1[layer1_pos]), layer1_pos * chunk2_per_chunk1, MIN((layer1_pos + 1) * chunk2_per_chunk1, layer2_size - 1));
     ULL counter = 0;
     const ULL target = i - layer1[layer1_pos] - layer2[layer2_pos];
 
