@@ -357,25 +357,3 @@ bitVector bitVector::operator~() const{
 
 #undef bitMask
 
-int main(void) {
-    size_t cap;
-    float ratio;
-    cout << "Digite o ratio: ";
-    cin >> ratio;
-    cout << "Digite o cap: ";
-    cin >> cap;
-    int aux;
-    bitVector bv = bitVector(cap, ratio);
-    cout << "Digite o bitvector: ";
-    for(auto i = 0; i < cap; i++) {
-        cin >> aux;
-        if(aux) {
-            bv.append1();
-        }
-        else
-            bv.append0();
-    }
-    bv.print();
-    bitVector bv2 = bv << 2;
-    bv2.print();
-}
