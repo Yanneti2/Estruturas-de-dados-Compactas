@@ -6,12 +6,26 @@ class Tree{
 		typedef struct Node {
 			struct Node* left;
 			struct Node* right;
-			bool marked;
+			char data;
+			double frequency;
+
+			Node(char d, double f) {
+				data = d;
+				frequency = f;
+				left = nullptr;
+				right = nullptr;
+			}
 		}node;
+
+		typedef struct compareNodes {
+		    bool operator()(Node* a, Node* b) {
+			return a->frequency > b->frequency;
+		    }
+		}compareNodes;
 
 		Tree();
 		~Tree();
-		Node* create_node();
+		Node* create_node(char data, double freq);
 		void print_tree(Node* root);
 		Node* getRoot();
 		bool getMarked();
