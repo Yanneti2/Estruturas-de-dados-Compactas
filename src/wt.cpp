@@ -1,8 +1,16 @@
+#include "../include/bitvector.h"
+#include "../include/wt.h"
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
+<<<<<<< Updated upstream
 #include "..\include\wt.h"
 #include <map>
 #include <algorithm>
+=======
+#include <queue>
+#include <map>
+>>>>>>> Stashed changes
 
 using namespace std;
 
@@ -18,10 +26,18 @@ std::map<char, bool> Hashing(string S) {
 }
 
 WaveletTree::WaveletTree(string S, WaveletTree* dad) {
+<<<<<<< Updated upstream
     // cout << S << "\n";
     this->d = dad;
     map<char, bool> alphabet = Hashing(S);
     for (auto i = alphabet.begin(); i != alphabet.end(); i++) {
+=======
+    this->d = dad;
+    this->s = S;
+    map<char, bool> chars = Hashing(S);
+    string alpha;
+    for (auto i = chars.begin(); i != chars.end(); i++) {
+>>>>>>> Stashed changes
         alpha += i->first;                         
     }
 
@@ -57,7 +73,12 @@ WaveletTree::WaveletTree(string S, WaveletTree* dad) {
     vector->build_select1();
 
     this->freq = vector;
+<<<<<<< Updated upstream
     // freq.print();
+=======
+    vector.print();
+    cout<<this->s<<endl<<endl;
+>>>>>>> Stashed changes
     if(LSS.size()) {
         this->l = new WaveletTree(LSS, this);
     }
@@ -91,9 +112,21 @@ WaveletTree::~WaveletTree() {
     this->freq->~bitVector();
 }
 
-unsigned long long WaveletTree::rank() {
+// da p fazer com .dot do graphviz
+void WaveletTree::print() {
+	queue<WaveletTree*> q;
+	q.push(this);
+	while(!q.empty()){
+		WaveletTree* cur = q.front();
+		q.pop();
+		//cur->freq.print();
+		cout<<cur->s<<endl<<endl;
+		if(cur->l)q.push(cur->l);
+		if(cur->r)q.push(cur->r);
+	}
 }
 
+<<<<<<< Updated upstream
 char WaveletTree::access(ULL i){
 
     if(alpha.size() == 1){
@@ -121,4 +154,33 @@ ULL WaveletTree::select_c(char c,  ULL j){
         auto k = r->select_c(c, j);
         return freq->select1(k);
     }
+=======
+ULL WaveletTree::rank0(bitVector b, ULL i) {
+	return 0;
+}
+
+ULL WaveletTree::rank1(bitVector b, ULL i) {
+	return 0;
+}
+
+string WaveletTree::access(WaveletTree* root, ULL i) {
+	while(root->l && root->r){
+		if(root->freq[i] == 0){
+			i = rank0(root->freq,i);
+			root = root->l;	
+		}else{
+			i = rank1(root->freq,i);
+			root = root->r;
+		}
+	}
+	return root->s;
+}
+
+unsigned long long WaveletTree::select0() {
+	return 0;
+}
+
+unsigned long long WaveletTree::select1() {
+	return 0;
+>>>>>>> Stashed changes
 }

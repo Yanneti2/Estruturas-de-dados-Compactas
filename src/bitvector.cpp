@@ -261,9 +261,9 @@ void bitVector::put(bitVector* B, unsigned long i) {
 void bitVector::print() const {
     printf("len: %ld, cap: %ld, ratio: %f\n", _size, _cap, ratio);
     for (unsigned long long i=0; i< _size; i++) {
-        printf("%d ", (*this)[i]);
+        printf("%d", (*this)[i]);
     }
-    printf("\n\n");
+    printf("\n");
 }
 
 unsigned long bitVector::popcount(){
