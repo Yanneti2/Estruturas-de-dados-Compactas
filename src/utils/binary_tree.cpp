@@ -7,7 +7,8 @@ using namespace std;
 Tree::Tree(){
 	this->root = new Node();
 	this->root->left = this->root->right = nullptr;
-	this->root->marked = false;
+	this->root->data = '$';
+	this->root->frequency = 0.0;
 }	
 
 // frees the memory of the existing now old tree
@@ -29,17 +30,15 @@ Tree::~Tree(){
 // Returns 0 if not empty and 1 if empty
 bool Tree::isEmpty(Node* root){ if (root) return 0; else return 1; } 
 
-// returns true or false if node marked
-bool Tree::getMarked(){ return this->root->marked; }
-
 // Return the root of the given existen Tree
 Tree::Node* Tree::getRoot(){ return this->root; }
 
 // Create and returns a new node
-Tree::Node* Tree::create_node(){
+Tree::Node* Tree::create_node(char data, double freq){
 	Node* nnode = new Node();
 	nnode->left = nnode->right = nullptr;
-	nnode->marked = false;
+	nnode->data = data; // standart = $
+	nnode->frequency = freq; // standar = 0.0
 	return nnode;
 }
 
@@ -53,7 +52,7 @@ void Tree::print_tree(Node* root){
 		for (int i = 0; i < nodes; i++){
 			Node* aux = q.front(); 
 			q.pop();
-			std::cout << "[] ";
+			std::cout << "[" << aux->data << "] " << std::endl;
 			if (aux->left) q.push(aux->left);
 			if (aux->right) q.push(aux->right);
 		}
