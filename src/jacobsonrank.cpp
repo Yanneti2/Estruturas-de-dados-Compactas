@@ -18,6 +18,35 @@ extern uint64_t bitMask64[];
 
 template <typename T>
 unsigned long long binary_search(T *V, T target, unsigned long long beginning, unsigned long long end) {
+    while(1) {
+        if (end == beginning) {
+            return end - 1;
+        }
+        unsigned long long middle = (beginning + end) / 2;
+        if (V[middle] < target) {
+            beginning = middle + 1;
+        } else {
+            end = middle;
+        }
+
+        // if (V[middle] > target) {
+        //     end = middle - 1;
+        // } else if (V[middle] < target) {
+        //     beginning = middle + 1;
+        // } else {
+        //     return middle - 1;
+        // }
+        // if (end < beginning) {
+        //     return end;
+        // }
+    }
+}
+
+// 1 6 7 9 12 19
+
+
+template <typename T>
+unsigned long long binary_search(T *V, T target, unsigned long long beginning, unsigned long long end, unsigned long long factor) {
     if (end == beginning) {
         return end;
     }
@@ -26,7 +55,31 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
             return end - 1;
         }
         unsigned long long middle = (beginning + end) / 2;
-        if (V[middle] < target) {
+        if (factor * middle - V[middle] < target) {
+            beginning = middle + 1;
+        } else {
+            end = middle;
+        }
+    }
+}
+
+template <typename T>
+unsigned long long binary_search(T *V, T target, unsigned long long beginning, unsigned long long end, unsigned long long factor1, unsigned long long factor2) {
+    // 47, 10, 20, 9, 46
+    // 0   8   12   17   19   21   25   30   33   40
+    factor2 = beginning;
+    if (end == beginning) {
+        return end;
+    }
+    while(1) {
+        if (end == beginning) {
+            return end - 1;
+        }
+        //135 - 46 - 21 = 68 ==> 10, 15, 12
+        //108 - 46 - 12 = 50 ==> 10, 12, 11
+        //99  - 46 -  8 = 45 ==> 12, 12, 12
+        unsigned long long middle = (beginning + end) / 2;
+        if (factor1 * (middle - factor2) - V[middle] < target) {
             beginning = middle + 1;
         } else {
             end = middle;
@@ -170,33 +223,34 @@ void JacobsonRank::build_select0(bitVector *B) {
 
 // g++ -D selectstructure (ss??)
 ULL JacobsonRank::select0(bitVector *B, ULL i) {
+    if (i > rank0(B, B->size())) return -1;
     #ifdef selectstructure
     const ULL lower_bound = select_vector0[i / select_j];
     const ULL upper_bound = select_vector0[i / select_j + 1];
+    if (i % select_j == 0) return lower_bound;
     #else
+    if (i == 0) return 0;
     const ULL lower_bound = 0; 
     const ULL upper_bound = B->size();
     #endif
-    if (i % select_j == 0) {
-        return lower_bound; 
-    }
-    const ULL layer1_pos = binary_search(layer1, i, lower_bound / chunk1_size, (upper_bound - 1) / chunk1_size);
-    const ULL layer2_pos = binary_search(layer2, (short) (i - layer1[layer1_pos]), layer1_pos * chunk2_per_chunk1, MIN((layer1_pos + 1) * chunk2_per_chunk1 - 1, layer2_size - 1));
-
+    ULL layer1_pos = binary_search(layer1, i, lower_bound / chunk1_size, (upper_bound + chunk1_size - 1) / chunk1_size, chunk1_size);
+    ULL layer2_pos = binary_search(layer2, (short) (i - layer1_pos * chunk1_size + layer1[layer1_pos]), layer1_pos * chunk2_per_chunk1,
+                                   MIN((layer1_pos + 1) * chunk2_per_chunk1, layer2_size - 1), chunk2_size, layer1_pos * chunk1_size - layer1[layer1_pos]);
     ULL counter = 0;
-    const ULL target = i - layer1[layer1_pos] - layer2[layer2_pos];
+    const ULL target = i - (layer2_pos * chunk2_size - layer1[layer1_pos] - layer2[layer2_pos]);
 
     // Busca sequencial na palavra, é possível fazer uma busca binária com pop_count mas talvez não seja tão eficiente
     for (ULL j = 0; j < chunk2_size; j++) {
-        counter += (((*B)[j + layer2_pos * chunk2_size])-1)*(-1);
+        counter += 1 ^ ((*B)[j + layer2_pos * chunk2_size]);
         if (counter == target) {
             return layer2_pos * chunk2_size + j + 1;
         } 
     }
-    return 0;
+    return chunk2_size + layer2_pos * chunk2_size;
 }
 
 ULL JacobsonRank::select1(bitVector *B, ULL i) {
+    if (i > rank1(B, B->size())) return -1;
     #ifdef selectstructure
     const ULL lower_bound = select_vector1[i / select_j];
     const ULL upper_bound = select_vector1[i / select_j + 1];
@@ -216,7 +270,7 @@ ULL JacobsonRank::select1(bitVector *B, ULL i) {
         counter += (*B)[j + layer2_pos * chunk2_size];
         if (counter == target) {
             return layer2_pos * chunk2_size + j + 1;
-        } 
+        }
     }
     return 0;
 }
