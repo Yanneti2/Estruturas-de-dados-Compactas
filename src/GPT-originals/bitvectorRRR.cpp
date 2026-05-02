@@ -9,9 +9,12 @@
 
 #include "bitvectorRRR.h"
 #include "mask01.h"
-
+#include "mask10.h"
 
 using namespace std;
+
+// Integer %:
+#define intmod(i,j) (((i)+(j)-1)/(j))
 
 // 64 bit masks with a single 1 at bit i:
 #define masks1(i) (0x8000000000000000 >> (i))
@@ -27,14 +30,14 @@ using namespace std;
 **/
 bitvectorRRR::bitvectorRRR(uint64_t size) {
 
-  vsize = size;
+  vsize_req = size;
   
-  bsize = ceil(log2(vsize)/2);
-  uint64_t bnum = (vsize+bsize-1)/bsize;
+  bsize = ceil(log2(vsize_req)/2);
+  ssize = (unsigned) floor(log2(vsize_req));
 
-  ssize = (unsigned) floor(log2(vsize));
+  vsize = bsize * intmod(vsize_req,bsize); 
   
-  V = new uint64_t[((bnum*bsize)+63)/64];
+  V = new uint64_t[intmod(vsize,64)]; 
   T = NULL;
 }
 
@@ -42,6 +45,17 @@ bitvectorRRR::bitvectorRRR(uint64_t size) {
 
 bitvectorRRR::~bitvectorRRR() {
   delete [] V;
+
+  if (T) {
+    for (uint64_t k=0; k<=bsize; k++) 
+      delete T[k];
+    delete [] T;
+    delete Tbits;
+    delete C;
+    delete R;
+    delete SBsum;
+    delete SBidx;
+  }
 }
 
 
@@ -58,7 +72,7 @@ uint64_t bitvectorRRR::size() {
 **/
 void bitvectorRRR::set0() {
 
-  uint64_t n = (vsize+63)/64;
+  uint64_t n = intmod(vsize,64); 
   for (uint64_t i=0; i<n; i++) 
     V[i] = 0x0000000000000000;
 }
@@ -70,7 +84,7 @@ void bitvectorRRR::set0() {
 **/
 void bitvectorRRR::set1() {
 
-  uint64_t n = (vsize+63)/64;
+  uint64_t n = intmod(vsize,64); 
   for (uint64_t i=0; i<n; i++) 
     V[i] = 0xFFFFFFFFFFFFFFFF;
 }
@@ -140,12 +154,21 @@ uint64_t bitvectorRRR::get(uint64_t i, unsigned k) {
 **/
 void bitvectorRRR::preprocess() {
 
-  uint64_t bnum = (vsize+bsize-1)/bsize;  // # of blocks
-  uint64_t snum = (vsize+(bsize*ssize)-1)/(bsize*ssize);  // # of superblocks
-  
+  uint64_t bnum = intmod(vsize,bsize);  // # of blocks
+  uint64_t snum = intmod(vsize,ssize*bsize);  // # of superblocks
+
+  uint64_t words = intmod(vsize,64); //(vsize+63)/64;
+
   // Reset excess bits in V, i.e. in the last word of V:
-  V[(((bnum*bsize)+63)/64)-1] &= ~mask01[vsize%64];
-  
+  unsigned slack = words*64-vsize_req;
+
+  if (slack <= 64)
+    V[((vsize+63)/64)-1] &= ~mask01[vsize_req%64];
+  else {
+    V[((vsize+63)/64)-2] &= ~mask01[vsize_req%64];
+    V[((vsize+63)/64)-1] = 0x0000000000000000;
+  }    
+
   // Create T, empty, and counters for the size of each row of T, zeroed:
   T = new uvector*[bsize+1]; 
   unsigned* Tsize = new unsigned[bsize+1];  
@@ -181,7 +204,7 @@ void bitvectorRRR::preprocess() {
   Tbits->set(0,1);
   
   for (int k=1; k<bsize; k++) 
-    Tbits->set(k,(uint64_t) ceil(log2(Tsize[k]+1)));
+    Tbits->set(k,(uint64_t) ceil(log2(Tsize[k])));
 
   Tbits->set(bsize,1);
 
@@ -211,7 +234,6 @@ void bitvectorRRR::preprocess() {
   for (i=0; i<bnum; i++) {
 
     if (i>0 && i%ssize == 0) {
-      //printf("set SBsum at %lu to %lu\n",i/ssize,sum);
       SBsum->set(i/ssize,sum);
       SBidx->set(i/ssize,index);
     }
@@ -236,6 +258,32 @@ void bitvectorRRR::preprocess() {
 
 
 
+
+unsigned bitvectorRRR::access(uint64_t i) {
+
+  uint64_t sb = i/(ssize*bsize);
+  uint64_t rpos = SBidx->get(sb);
+
+  uint64_t blk = i/bsize;
+  unsigned bits = i%bsize;
+  unsigned c;
+
+  uint64_t b;
+  for (b=sb*ssize; b<blk; b++) {
+    c = C->get(b);
+    rpos += Tbits->get(c);
+  }
+
+  c = C->get(b);
+  uint64_t classrank = R->get(rpos,Tbits->get(c));
+  uint64_t block = T[c]->get(classrank);
+
+  return (block & masks1(64-bsize+bits) ? 1 : 0);
+}
+
+
+
+
 uint64_t bitvectorRRR::rank1(uint64_t i) {
 
   // From superblock:
@@ -244,9 +292,10 @@ uint64_t bitvectorRRR::rank1(uint64_t i) {
   uint64_t rpos = SBidx->get(sb);
 
   // From blocks:
-  unsigned b = i/bsize;
+  uint64_t b = i/bsize;
   unsigned bits = i%bsize;
-  unsigned c, k;
+  unsigned c;
+  uint64_t k;
   
   if (bits == bsize-1) {
     // i matches a block:
@@ -276,6 +325,81 @@ uint64_t bitvectorRRR::rank1(uint64_t i) {
 
 
 
+
+/*
+  A binary search to get the leftmost positon of V with value larger
+  than or equal to x.
+*/
+uint64_t bitvectorRRR::lbsearch(uvector* V, uint64_t x) {
+
+  uint64_t left = 0;
+  uint64_t right = V->size()-1;
+  uint64_t middle;
+
+  while (left < right) {
+    middle = (left+right)/2;
+    if (x > V->get(middle))
+      left = middle + 1;
+    else
+      right = middle;
+  }
+  
+  if (V->get(left) >= x)
+    return left;
+  else
+    return UINT64_MAX;
+}
+
+
+
+
+uint64_t bitvectorRRR::select1(uint64_t j) {
+
+  uint64_t sb = lbsearch(SBsum,j);
+
+  if (sb == UINT64_MAX)
+    return vsize_req;
+
+  sb--;
+  
+  uint64_t pos = sb*ssize*bsize;
+  uint64_t ones = SBsum->get(sb);
+  uint64_t rpos = SBidx->get(sb);
+
+  uint64_t k = (sb)*ssize;
+  unsigned c, tbits;
+  while (ones < j) {
+    c = C->get(k);
+    ones += c;
+    tbits = Tbits->get(c);
+    rpos += tbits;
+    pos += bsize;
+    k++;
+  }
+
+  ones -= c;
+  rpos -= tbits;
+  pos -= bsize;
+  k--;
+
+  c = C->get(k);
+  unsigned classrank = R->get(rpos,Tbits->get(c));
+  uint64_t block = T[c]->get(classrank);
+
+  block <<= (64-bsize);
+  
+  while (ones < j) {
+    ones += (block & 0x8000000000000000 ? 1 : 0);
+    pos++;
+    block <<= 1;
+  }
+
+  return pos-1;
+}
+
+
+
+
 #if DEBUG
 
 /**
@@ -285,17 +409,29 @@ void bitvectorRRR::print() {
   
   int i,j;
 
-  uint64_t bnum = (vsize+bsize-1)/bsize;
-  uint64_t snum = (vsize+(bsize*ssize)-1)/(bsize*ssize); 
+  uint64_t bnum = intmod(vsize,bsize); //(vsize+bsize-1)/bsize;
+  uint64_t snum = intmod(bnum,ssize); //(bnum+ssize-1)/ssize;
 
-  uint64_t n = ((bnum*bsize)+63)/64;
+  uint64_t n = (bsize*bnum+63)/64;
 
-  printf("bitvectorRRR size=%lu words=%lu blk size=%u blk num=%lu SB size SB=%u num=%lu\n",
-	 vsize,n,bsize,bnum,ssize,snum);
+  printf("\nbitvectorRRR size_req=%lu, size=%lu words=%lu blk size=%u blk num=%lu SB size=%u SB num=%lu\n",
+	 vsize_req,vsize,n,bsize,bnum,ssize,snum);
   
   n *= 64;
   
   // ruler:
+
+
+  for (i=0; i<n; i++) {
+    if (i%10 == 0)
+      printf("%d",(i/100)%100);
+    else
+      printf(" ");
+    if (i%bsize == bsize-1)
+      printf(" ");
+  }
+  printf("\n");
+
   for (i=0; i<n; i++) {
     if (i%10 == 0)
       printf("%d",(i/10)%10);
@@ -322,13 +458,13 @@ void bitvectorRRR::print() {
       printf(" ");
     }
   }
-  printf("\n");
+  printf("\n\n");
 
 
   if (T) {
     printf("T\n");
     for (int k=0; k<=bsize; k++) {
-      printf("%d \n",k);
+      printf("%d: ",k);
       T[k]->print();
     }
     printf("\n");
@@ -357,13 +493,66 @@ void bitvectorRRR::print() {
 
 void bitvectorRRR::set_random() {
 
-  uint64_t bnum = (vsize+bsize-1)/bsize;
-  uint64_t n = ((bnum*bsize)+63)/64;
+  uint64_t bnum = intmod(vsize,bsize); //(vsize+bsize-1)/bsize;
+  uint64_t n = intmod(bnum*bsize,64); //((bnum*bsize)+63)/64;
   n *= 4;
 
   uint16_t* p = (uint16_t*) V;
   for (uint64_t i=0; i<n; i++) 
     p[i] = rand() % 65536;
 }
+
+
+
+/**
+   \brief Return rank1(B,i), the number of ones in B[0..i].
+**/
+uint64_t bitvectorRRR::rank1_raw(uint64_t i) {
+
+  uint64_t r = 0;
+
+  int j = 0;
+  for ( ; j<i/64; j++) 
+    r += std::popcount(V[j]);
+
+  r += std::popcount(V[j] & mask10[i%64+1]);
+  
+  return r;
+}
+
+
+
+/**
+   \brief Return select1(B,i), the index of the i-th one in B,
+   or |B| if there are not i ones in B.
+**/
+uint64_t bitvectorRRR::select1_raw(uint64_t j) {
+
+  uint64_t w = (63+vsize_req)/64;
+  uint64_t zeros = 0;
+
+  int64_t i = 0;
+  while (i<w && zeros<j) {
+    zeros += std::popcount(V[i]);
+    i++;
+  }
+
+  if (i == w  && zeros < j)
+    return vsize_req;
+
+  i--;
+  zeros -= std::popcount(V[i]);
+
+  w = V[i];
+  i = i*64-1;
+  while (zeros<j && i<(int64_t)vsize_req) {
+    zeros += (w & 0x8000000000000000 ? 1 : 0);
+    i++;
+    w <<= 1;
+  }
+
+  return i;
+}
+
 
 #endif

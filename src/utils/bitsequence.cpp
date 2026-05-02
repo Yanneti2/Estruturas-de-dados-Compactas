@@ -46,7 +46,7 @@ bitsequence::bitsequence(uint64_t capacity, float growth_ratio) {
 
 
 bitsequence::~bitsequence() {
-  delete [] S;
+  free(S);
 }
 
 

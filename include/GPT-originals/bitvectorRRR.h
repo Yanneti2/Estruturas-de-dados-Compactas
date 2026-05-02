@@ -29,6 +29,7 @@ class bitvectorRRR {
  private:
   uint64_t* V;
   uint64_t vsize;  // The number of bits in V.
+  uint64_t vsize_req;  // The number of bits for V requisted on creation.
 
   unsigned bsize; // The number of bits in a block.
   unsigned ssize; // The number of blocks in a superblock.
@@ -49,6 +50,7 @@ class bitvectorRRR {
   uvector* SBidx;
   
   uint64_t get(uint64_t i, unsigned k);
+  uint64_t lbsearch(uvector* V, uint64_t x);
   
  public:
   bitvectorRRR(uint64_t size);
@@ -66,19 +68,23 @@ class bitvectorRRR {
   void preprocess();
 
   uint64_t rank1(uint64_t i);
+  uint64_t select1(uint64_t j);
+
+  unsigned access(uint64_t i);
 
   /*
   uint64_t rank0(uint64_t i);
 
   uint64_t select0(uint64_t j);
-  uint64_t select1(uint64_t j);
 
-  int access(uint64_t i);
   */
 
   #if DEBUG
   void print();
   void set_random();
+
+  uint64_t rank1_raw(uint64_t i);
+  uint64_t select1_raw(uint64_t j);
   #endif
 };
 
