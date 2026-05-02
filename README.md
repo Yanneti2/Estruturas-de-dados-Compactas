@@ -9,3 +9,5 @@ Gonzalo Navarro, Compact Data Structures – A practical approach, 		Cambridge U
 Press, 2016;
 
 alem de artigos dos trabalhos originais citados nesse livro e artigos publicados mais recentemente no tema.
+
+Para mais informações, acesse a [documentação do projeto](https://github.com/Yanneti2/Estruturas-de-dados-Compactas/edit/main/README.md).
