@@ -1,8 +1,10 @@
+#include "..\include\bitvector.h"
+#include "..\include\wt.h"
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
-#include "..\include\wt.h"
+#include <queue>
 #include <map>
-#include "../include/bitvector.h"
 #include <algorithm>
 
 using namespace std;
@@ -19,7 +21,7 @@ std::map<char, bool> Hashing(string S) {
 }
 
 WaveletTree::WaveletTree(string S, WaveletTree* dad) {
-    // cout << S << "\n";
+    cout << S << "\n";
     this->d = dad;
     map<char, bool> alphabet = Hashing(S);
     for (auto i = alphabet.begin(); i != alphabet.end(); i++) {
@@ -68,7 +70,6 @@ WaveletTree::WaveletTree(string S, WaveletTree* dad) {
 }
 
 void WaveletTree::teste(){
-
     cout << alpha << endl;
     if(l){
         l->teste();
@@ -77,7 +78,6 @@ void WaveletTree::teste(){
         r->teste();
     }
 }
-
 
 WaveletTree::~WaveletTree() {
     if (this->l != NULL) {
@@ -89,14 +89,24 @@ WaveletTree::~WaveletTree() {
         delete this->r;
     }
     delete this->d;
-    this->freq.~bitVector();
+    this->freq->~bitVector();
 }
 
-unsigned long long WaveletTree::rank() {
+// da p fazer com .dot do graphviz
+void WaveletTree::print() {
+	queue<WaveletTree*> q;
+	q.push(this);
+	while(!q.empty()){
+		WaveletTree* cur = q.front();
+		q.pop();
+		if(cur->freq)cur->freq->print();
+		cout<<cur->alpha<<endl<<endl;
+		if(cur->l)q.push(cur->l);
+		if(cur->r)q.push(cur->r);
+	}
 }
 
 char WaveletTree::access(ULL i){
-
     if(alpha.size() == 1){
         return alpha[0];
     }
@@ -110,16 +120,34 @@ char WaveletTree::access(ULL i){
     }
 }
 
-ULL WaveletTree::select_c(char c,  ULL j){
-    if(1 == alpha.size()){ return j; }
-    ULL index = alpha.size()/2;
-
-    if(c <= alpha[index]){
-        auto k = l->select_c(c, j);
-        return freq->select0(k);
+// seg fault, alpha should be only on root
+ULL WaveletTree::select_c(ULL a, ULL b, char c,  ULL j){
+    if(a==b)return j;
+    ULL aux = floor((a+b)/2);
+    if(c <= alpha[aux]){
+        j = l->select_c(a,aux,c,j);
+        return freq->naive_select0(j);
     }
     else{
-        auto k = r->select_c(c, j);
-        return freq->select1(k);
+        j = r->select_c(aux,b,c,j);
+        return freq->naive_select1(j);
     }
+}
+
+ULL WaveletTree::rank_c(char c, ULL i){
+	WaveletTree* root = this;
+	ULL a = 1;
+	ULL b = len;
+	while(a!=b){
+		if(c <= alpha[floor((a+b)/2)]){
+			i = freq->rank0(i);
+			root = root->l;
+			b = floor((a+b)/2);
+		}else{
+			i = freq->rank1(i);
+			root = root->r;
+			a = floor((a+b)/2) + 1;
+		}
+	}	
+	return i;
 }

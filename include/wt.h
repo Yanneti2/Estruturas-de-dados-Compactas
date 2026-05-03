@@ -1,6 +1,5 @@
-#include <cstdlib>
+#include "../include/bitvector.h"
 #include <iostream>
-#include "..\include\bitvector.h"
 #include <map>
 #define ULL unsigned long long
 
@@ -8,7 +7,7 @@
 
 class WaveletTree {
 private:
-    uint64_t len; //alphabet lenght
+    uint64_t len; // b
     WaveletTree *d;
     WaveletTree *l;
     WaveletTree *r;
@@ -23,5 +22,7 @@ public:
     //mudancas feitas
     char access(ULL i);
     void teste();
-    ULL select_c(char c, ULL j);
+    ULL select_c(ULL a, ULL b, char c,  ULL j);
+    ULL rank_c(char c, ULL i);
+    void print();
 };

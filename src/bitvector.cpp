@@ -194,8 +194,8 @@ void bitVector::append1() {
     set1(_size++);
 }
 
-size_t bitVector::size() const { return _size; }
-size_t bitVector::cap() const { return _cap; }
+unsigned long bitVector::size() const { return _size; }
+unsigned long bitVector::cap() const { return _cap; }
 
 /**
     Coloca uma sequencia predefinida de bits ao final do bitvector.
@@ -263,7 +263,7 @@ void bitVector::print() const {
     for (unsigned long long i=0; i< _size; i++) {
         printf("%d ", (*this)[i]);
     }
-    printf("\n\n");
+    printf("\n");
 }
 
 unsigned long bitVector::popcount(){
@@ -437,4 +437,3 @@ bitVector bitVector::operator~() const{
 }
 
 #undef bitMask
-
