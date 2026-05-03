@@ -1,4 +1,6 @@
 #include <cstdint>
+#include "nlohmann/json.hpp"
+
 
 #ifndef BITVECTOR
 #define BITVECTOR
@@ -31,7 +33,8 @@ public:
     int grow(unsigned long ncap);
     size_t size() const;
     size_t cap() const;
-
+    nlohmann::json JSONSerialize();
+    string JSONDeserialize(nlohmann::json j);
     // Methods implemented by GPT (originals and modded)
     bitVector(unsigned long capacity = 1, float growth_ratio = 2);
     ~bitVector();

@@ -13,12 +13,16 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include <cassert>
-#include "../include/bitvector.h"
+#include "bitvector.h"
 #include <cmath>
+#include "nlohmann/json.hpp"
+
 
 #include <cmath>
 #include <iostream>
 using namespace std;
+
+// using json = nlohmann::json
 
 #ifndef bitMask
 #ifdef IS32BIT
@@ -353,6 +357,24 @@ bitVector bitVector::operator~() const{
             newB.append1();
     }
     return newB;
+}
+
+nlohmann::json bitVector::JSONSerialize() {
+    nlohmann::json j;
+    string s = "";
+    for(uint32_t i = 0; i < _size; i++) {
+        s += to_string((*this)[i]);
+        s += " ";
+    }
+    j["Content"] = s;
+    j["Size"] = to_string( _size);
+    j["Cap"] = to_string( _cap);
+    j["Ratio"] = to_string( ratio);
+    return j;
+}
+
+string bitVector::JSONDeserialize(nlohmann::json j){
+    return j.dump(4);
 }
 
 #undef bitMask
