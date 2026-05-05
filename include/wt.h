@@ -22,7 +22,7 @@ public:
     //mudancas feitas
     char access(ULL i);
     void teste();
-    ULL select_c(ULL a, ULL b, char c,  ULL j);
+    ULL select_c(char c,  ULL j);
     ULL rank_c(char c, ULL i);
     void print();
 };

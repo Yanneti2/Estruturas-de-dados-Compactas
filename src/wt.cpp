@@ -121,30 +121,33 @@ char WaveletTree::access(ULL i){
 }
 
 // seg fault, alpha should be only on root
-ULL WaveletTree::select_c(ULL a, ULL b, char c,  ULL j){
-    if(a==b)return j;
+
+ULL WaveletTree::select_c(char c,  ULL j){
+    ULL a = 0;
+	ULL b = len;
+    if(a==b) return j;
     ULL aux = floor((a+b)/2);
     if(c <= alpha[aux]){
-        j = l->select_c(a,aux,c,j);
+        j = l->select_c(c,j);
         return freq->naive_select0(j);
     }
     else{
-        j = r->select_c(aux,b,c,j);
+        j = r->select_c(c,j);
         return freq->naive_select1(j);
     }
 }
-
+//abcdefimnoprtx
 ULL WaveletTree::rank_c(char c, ULL i){
 	WaveletTree* root = this;
-	ULL a = 1;
-	ULL b = len;
+	ULL a = 0;
+	ULL b = len-1;
 	while(a!=b){
 		if(c <= alpha[floor((a+b)/2)]){
-			i = freq->rank0(i);
+			i = freq->naive_rank0(i);
 			root = root->l;
 			b = floor((a+b)/2);
 		}else{
-			i = freq->rank1(i);
+			i = freq->naive_rank1(i);
 			root = root->r;
 			a = floor((a+b)/2) + 1;
 		}

@@ -278,8 +278,6 @@ unsigned long bitVector::naive_rank1(unsigned long long i){
     unsigned pop_count = 0;
     unsigned long j;
     for(j = 0; j < (i - 1)/NBITS; j++){
-        //unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~bitMask(i % chunk2_size));
-        // & ~bitMask(i%B->size())
         pop_count += std::__popcount(accessWord(i));
     }
     // pop_count += std::__popcount(accessWord(_size - i));
@@ -327,7 +325,7 @@ void bitVector::build_select1(){
 unsigned long bitVector::naive_select1(unsigned long long i){
     unsigned long pop_count = 0;
     unsigned long j;
-    for(j = 0; j < _size; j++){
+    for(j = 0; j <= _size; j++){
         if(pop_count == i) return j;
         pop_count += (*this) [j];
     }
@@ -337,7 +335,7 @@ unsigned long bitVector::naive_select1(unsigned long long i){
 unsigned long bitVector::naive_select0(unsigned long long i){
     unsigned long counter = 0;
     unsigned long j = 0;
-    for(j = 0;  j < _size; j++){
+    for(j = 0;  j <= _size; j++){
         if((j - counter) == i) return j;
         counter += (*this) [j];
     }
