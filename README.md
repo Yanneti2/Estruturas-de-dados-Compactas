@@ -1,13 +1,11 @@
-# Estruturas-de-dados-Compactas
+# Compact-Data-Structures
 
-Com o crescimento do volume de dados processados em nosso cotidiano, surge a necessidade de analisar estruturas-de-dados que, sejam satisfatorias na relacao compressiblidade-acessiblidade e capazes de, simultaneamente,  gastarem o menos de memoria possivel e serem eficientes no que tange o tempo de processamento.
+With the growing volume of data processed in our daily lives, there is a need to analyze data structures that are satisfactory in the compressibility-accessibility trade-off and capable of simultaneously using as little memory as possible while being efficient in terms of processing time.
 
-Dai nasce o conceito de "estruturas-de-dados compactas", objeto de estudo dirigido realizado na Universidade Estadual de Campinas, ministrado pelo professor Guilherme P. Telles e que possui como referencia basica o livro:
+From this arises the concept of "compact data structures", the subject of a directed study conducted at the State University of Campinas (UNICAMP), taught by Professor Guilherme P. Telles, with the following book as its primary reference:
 
-Gonzalo Navarro, Compact Data Structures – A practical approach, 		Cambridge University
+Gonzalo Navarro, *Compact Data Structures – A Practical Approach*, Cambridge University Press, 2016;
 
-Press, 2016;
+as well as papers from the original works cited in that book and more recently published articles on the topic.
 
-alem de artigos dos trabalhos originais citados nesse livro e artigos publicados mais recentemente no tema.
-
-Para mais informações, acesse a [documentação do projeto](https://github.com/Yanneti2/Estruturas-de-dados-Compactas/wiki).
+For more information, access the [project documentation](https://github.com/Yanneti2/Estruturas-de-dados-Compactas/wiki).
