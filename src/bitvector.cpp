@@ -329,6 +329,7 @@ unsigned long bitVector::naive_select1(unsigned long long i){
         if(pop_count == i) return j;
         pop_count += (*this) [j];
     }
+    if(pop_count == i) return j;
     return -1;
 }
 
@@ -339,6 +340,7 @@ unsigned long bitVector::naive_select0(unsigned long long i){
         if((j - counter) == i) return j;
         counter += (*this) [j];
     }
+    if((j - counter) == i) return j;
     return -1;
 }
 
