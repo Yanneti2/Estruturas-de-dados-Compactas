@@ -140,7 +140,7 @@ JacobsonRank::JacobsonRank(bitVector *B) {
         layer1_counter += pop_count;
         layer2_counter += pop_count;
     }
-    this->layer1[layer2_size - 1] = layer1_counter;
+    this->layer1[layer1_size - 1] = layer1_counter;
 }
 
 JacobsonRank::~JacobsonRank() {
@@ -202,7 +202,7 @@ void JacobsonRank::build_select1(bitVector *B) {
     if (counter % select_j == 0 && counter != 0) {
         select_vector1[counter / select_j] = B->size();
     } 
-    select_vector1[(rank1(B, B->size() - 1) + select_j - 1) / select_j] = B->size();
+    select_vector1[(rank1(B, B->size()) + select_j - 1) / select_j] = B->size();
     this->select_j = select_j;
     this->select_vector1 = select_vector1;
 }
@@ -211,7 +211,7 @@ void JacobsonRank::build_select0(bitVector *B) {
     const ULL B_length = B->size();
     ULL select_j = ceil(log2((long double)B_length) * log((long double)B_length));
     if (select_j == 0) select_j = 1;
-    ULL *select_vector0 = (ULL *) malloc(((rank0(B, B->size()) + select_j - 1) / select_j + 1) * sizeof(ULL));
+    ULL *select_vector0 = (ULL *) malloc(((rank0(B, B->size()) + select_j - 1) / select_j + 1) * sizeof(unsigned long long));
     ULL counter = 0;
     select_vector0[0] = 0;
     for (ULL i = 0; i < B->size(); i++) {
@@ -225,7 +225,7 @@ void JacobsonRank::build_select0(bitVector *B) {
     if (counter % select_j == 0 && counter != 0) {
         select_vector0[counter / select_j] = B->size();
     } 
-    select_vector0[rank0(B, B->size()) + select_j - 1 / select_j] = B->size();
+    select_vector0[(rank0(B, B->size()) + select_j - 1) / select_j] = B->size();
     this->select_j = select_j;
     this->select_vector0 = select_vector0;
 }
@@ -276,7 +276,6 @@ ULL JacobsonRank::select1(bitVector *B, ULL i) {
     ULL counter = 0;
     const ULL target = i - layer1[layer1_pos] - layer2[layer2_pos];
 
-    // cout << layer1_pos << "  " << layer2_pos << endl;
     for (ULL j = 0; j < chunk2_size; j++) {
         counter += (*B)[j + layer2_pos * chunk2_size];
         if (counter == target) {
