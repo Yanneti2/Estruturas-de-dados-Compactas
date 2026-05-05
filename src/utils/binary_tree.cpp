@@ -5,10 +5,8 @@ using namespace std;
 
 // builds a new Tree initializating the root
 Tree::Tree(){
-	this->root = new Node();
-	this->root->left = this->root->right = nullptr;
-	this->root->data = '$';
-	this->root->frequency = 0.0;
+	this->root = new Node('$',0.0);
+	// null
 }	
 
 // frees the memory of the existing now old tree
@@ -35,11 +33,7 @@ Tree::Node* Tree::getRoot(){ return this->root; }
 
 // Create and returns a new node
 Tree::Node* Tree::create_node(char data, double freq){
-	Node* nnode = new Node();
-	nnode->left = nnode->right = nullptr;
-	nnode->data = data; // standart = $
-	nnode->frequency = freq; // standar = 0.0
-	return nnode;
+	return new Node(data,freq);	
 }
 
 // Prints the Tree in BFS order

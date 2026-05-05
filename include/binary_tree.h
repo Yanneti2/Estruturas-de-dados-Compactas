@@ -3,25 +3,20 @@
 
 class Tree{
 	public:
-		typedef struct Node {
-			struct Node* left;
-			struct Node* right;
+		struct Node {
+			Node* left;
+			Node* right;
 			char data;
 			double frequency;
 
-			Node(char d, double f) {
-				data = d;
-				frequency = f;
-				left = nullptr;
-				right = nullptr;
-			}
-		}node;
+			Node(char d, double f) : data(d), frequency(f), left(nullptr), right(nullptr) {}	
+		};
 
-		typedef struct compareNodes {
+		struct compareNodes {
 		    bool operator()(Node* a, Node* b) {
-			return a->frequency > b->frequency;
+			return (a->frequency > b->frequency);
 		    }
-		}compareNodes;
+		};
 
 		Tree();
 		~Tree();
