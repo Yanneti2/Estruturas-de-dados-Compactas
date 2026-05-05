@@ -27,11 +27,7 @@ int main(void) {
         RRR R(&B);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::nano> ns_time = (end - start);
-        // cout << std::fixed << std::setprecision(5) << "Construction time: " << ns_time.count() << "ns\n";
-        
-        B.print();
-        R.print();
-        unsigned long long index = rand();
+        unsigned long long index = rand() % B.size();
         start = std::chrono::high_resolution_clock::now();
         R.rank1(index);
         end = std::chrono::high_resolution_clock::now();
