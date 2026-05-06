@@ -1,153 +1,48 @@
 #include "jacobsonrank.h"
-// #include "utils.h"
-#include <iostream>
 
-#ifndef mask
-#ifdef IS32BIT
-#define mask(i) mask32[(i)]
-#else
-#define mask(i) mask64[(i)]
-#endif
-#endif
 
-#define MIN(A, B) ((A) < (B) ? (A) : (B)) 
-#define ULL unsigned long long
 
-extern uint32_t mask32[];
-extern uint64_t mask64[];
+rank::rank(bitVector *B) {
+    const unsigned long long B_length = B->getLength();
+    const long double logN = log2(B_length);
+    this->logN = logN;
 
-template <typename T>
-unsigned long long binary_search(T *V, T target, unsigned long long beginning, unsigned long long end) {
-    if (end == beginning) {
-        return end;
-    }
-    while(1) {
-        if (end == beginning) {
-            return end - 1;
+    const unsigned long long len = ceil(B_length / (long double) ceil(logN * logN));
+    this->len = len;
+
+    this->relative_ranks = (unsigned long long*) malloc(len * sizeof(unsigned long long));
+    unsigned long long len_sub = ceil(ceil(logN * logN) / (long double) ceil(logN));
+    this->super_relative_ranks = (short*) malloc(len * len_sub * sizeof(short));
+
+    unsigned long long counter = 0;
+    short relative_counter = 0;
+    for (unsigned long long i = 0; i < B_length; i++) {
+        if (i % (unsigned long long) ceil(logN * logN) == 0) {
+            this->relative_ranks[i / (unsigned long long) ceil(logN * logN)] = counter;
+            relative_counter = 0;
         }
-        unsigned long long middle = (beginning + end) / 2;
-        if (V[middle] < target) {
-            beginning = middle + 1;
-        } else {
-            end = middle;
+
+        if (i % (unsigned long long) ceil(logN) == 0) {
+            this->super_relative_ranks[i / (unsigned long long) (len_sub)] = relative_counter;
         }
+        int cur_bit = B->access(i);
+        counter += cur_bit;
+        relative_counter += cur_bit;
     }
 }
 
-jacobsonRank::jacobsonRank(bitVector *B, bool fixSizeToWordSize) {
-    const ULL B_length = B->size();
-    unsigned chunk1_size;
-    unsigned chunk2_size;
-    ULL layer1_size;
-    ULL layer2_size;
-    unsigned chunk2_per_chunk1;
+unsigned long long rank::rank1(bitVector *B, unsigned long long i) {
+    unsigned long long len_sub = ceil(ceil(logN * logN) / (long double) ceil(logN));
 
-    if (fixSizeToWordSize) {
-        chunk1_size = NBITS * NBITS;
-        chunk2_size = NBITS;
-    } else {
-        const long double logN = log2(B_length);
-        chunk1_size = ceil(logN) * floor(logN);
-        chunk2_size = chunk1_size / ceil(logN);
+    unsigned pop_count = 0;
+    for (unsigned long long j = 0; j < i % len_sub; j++) {
+        pop_count += B->access(i / len_sub * len_sub + j); 
+        
     }
-    layer1_size = (B_length + chunk1_size - 1) / chunk1_size;
-    chunk2_per_chunk1 = (chunk1_size + chunk2_size - 1) / chunk2_size;
-    layer2_size = chunk2_per_chunk1 * (layer1_size - 1) + (B_length % chunk1_size + chunk2_size - 1) / chunk2_size + 1;
 
-    this->chunk1_size = chunk1_size;
-    this->chunk2_size = chunk2_size;
-    this->layer1_size = layer1_size;
-    this->layer2_size = layer2_size;
-    this->chunk2_per_chunk1 = chunk2_per_chunk1;
-
-    this->layer1 = (ULL*) malloc(layer1_size * sizeof(ULL));
-    this->layer2 = (short*) malloc(layer2_size * sizeof(short));
-
-    ULL layer1_counter = 0;
-    ULL layer2_counter = 0;
-    for (ULL i = 0; i < layer2_size; i++) {
-        if (i % chunk2_per_chunk1 == 0) {
-            this->layer1[i / chunk2_per_chunk1] = layer1_counter;
-            layer2_counter = 0;
-        }
-        this->layer2[i] = layer2_counter;
-        short pop_count = std::__popcount(B->accessWord(i, chunk2_size));
-        layer1_counter += pop_count;
-        layer2_counter += pop_count;
-    }
+    return this->relative_ranks[i / (unsigned long long) ceil(logN * logN)] + this->super_relative_ranks[i / (unsigned long long) len_sub] + pop_count;
 }
 
-ULL jacobsonRank::rank1(bitVector *B, ULL i) {
-    ULL chunk1 = i / chunk1_size;
-    ULL chunk2 = i / chunk2_size;
-    unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~mask(i % chunk2_size));
-    return layer1[chunk1] + layer2[chunk2] + pop_count;
-}
-
-ULL jacobsonRank::rank0(bitVector *B, ULL i) {
+unsigned long long rank::rank0(bitVector *B, unsigned long long i) {
     return i - rank1(B, i);
 }
-
-void jacobsonRank::print() {
-    std::cout << "Layer1_Size: " << layer1_size << 
-        "\n" << "Layer2_Size: " << layer2_size << 
-        "\n" << "Chunk1_Size: " << chunk1_size << 
-        "\n" << "Chunk2_Size: " << chunk2_size << 
-        "\n" << "Chunk2_Per_Chunk1: " << chunk2_per_chunk1 << 
-        "\n" << "j: " << select_j << 
-        "\n\n";
-    for (ULL i = 0; i < layer2_size; i++) {
-        if (i % chunk2_per_chunk1 == 0) {
-            std::cout << "\n" << layer1[i / chunk2_per_chunk1] << ":\n";
-        }
-        std::cout << layer2[i] << "   ";
-    }
-    std::cout << "\n";
-}
-
-void jacobsonRank::build_select(bitVector *B) {
-    const ULL B_length = B->size();
-    ULL select_j = ceil(log2(B_length) * log(B_length));
-    ULL *select_vector = (ULL *) malloc((B_length + select_j - 1) / select_j * sizeof(ULL));
-    ULL counter = 0;
-    select_vector[0] = 0;
-    for (ULL i = 0; i < B->size(); i++) {
-        if ((*B)[i] == 1) {
-            counter++;
-            if (counter % select_j == 0) {
-                select_vector[counter / select_j] = i + 1;
-            } 
-        }
-    } 
-    if (counter % select_j == 0) {
-        select_vector[counter / select_j] = B->size();
-    } 
-    this->select_j = select_j;
-    this->select_vector = select_vector;
-}
-
-ULL jacobsonRank::select1(bitVector *B, ULL i) {
-    const ULL lower_bound = select_vector[i / select_j];
-
-    if (i % select_j == 0) {
-        return lower_bound; 
-    }
-
-    const ULL upper_bound = select_vector[i / select_j + 1];
-    const ULL layer1_pos = binary_search(layer1, i, lower_bound / chunk1_size, (upper_bound - 1) / chunk1_size);
-    const ULL layer2_pos = binary_search(layer2, (short) (i - layer1[layer1_pos]), layer1_pos * chunk2_per_chunk1, MIN((layer1_pos + 1) * chunk2_per_chunk1 - 1, layer2_size - 1));
-
-    ULL counter = 0;
-    const ULL target = i - layer1[layer1_pos] - layer2[layer2_pos];
-
-    // Busca sequencial na palavra, é possível fazer uma busca binária com pop_count mas talvez não seja tão eficiente
-    for (ULL j = 0; j < chunk2_size; j++) {
-        counter += (*B)[j + layer2_pos * chunk2_size];
-        if (counter == target) {
-            return layer2_pos * chunk2_size + j + 1;
-        } 
-    }
-    return 0;
-}
-
-#undef MIN

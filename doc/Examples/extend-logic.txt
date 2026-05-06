@@ -1,5 +1,3 @@
-Bits Sobrando e Faltando eba
-
 B1 = 00001111'10101010'01010  000
 B2 = 10101111'11
 

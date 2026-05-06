@@ -5,29 +5,18 @@
 #ifndef JACOBSONRANK
 #define JACOBSONRANK
 
-class jacobsonRank {
+class rank {
 private:
-    unsigned long long layer1_size;
-    unsigned long long layer2_size;
-    unsigned chunk1_size;
-    unsigned chunk2_size;
-    unsigned chunk2_per_chunk1;
-    unsigned long long *layer1;
-    short *layer2;
-
-    unsigned long long *select_vector;
-    unsigned long long select_j;
 
 public:
-    jacobsonRank(bitVector *B, bool fixSizeToWordSize = false);
-    ~jacobsonRank();
+    unsigned long long len;
+    long double logN;
+    unsigned long long *relative_ranks;
+    short *super_relative_ranks;
+    rank(bitVector *B);
+    ~rank();
     unsigned long long rank0(bitVector *B, unsigned long long i);
     unsigned long long rank1(bitVector *B, unsigned long long i);
-    void print();
-
-    void build_select(bitVector *B);
-    unsigned long long select0(bitVector *B, unsigned long long i);
-    unsigned long long select1(bitVector *B, unsigned long long i);
 };
 
 #endif
