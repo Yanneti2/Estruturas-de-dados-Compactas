@@ -1,4 +1,6 @@
 #include <cstdint>
+#include "nlohmann/json.hpp"
+
 #include "../include/jacobsonrank.h"
 
 #ifndef BITVECTOR
@@ -33,20 +35,26 @@ private:
 public:
     // Methods implemented post GPT (originals by stringers)
     int grow(unsigned long ncap);
-    unsigned long size() const;
-    unsigned long cap() const;
-
+    size_t size() const;
+    size_t cap() const;
+    nlohmann::json JSONSerialize();
+    string JSONDeserialize(nlohmann::json j);
     // Methods implemented by GPT (originals and modded)
-    bitVector(unsigned long capacity, float growth_ratio);
+    bitVector(unsigned long capacity = 1, float growth_ratio = 2);
     ~bitVector();
-
+    bool issameSize(bitVector B) const;
     void append0();
     void append1();
     void set0(unsigned long i);
     void set1(unsigned long i);
     void extend(bitVector *B);
     void put(bitVector *B, unsigned long i);
-
+    bitVector operator>>(unsigned long i) const;
+    bitVector operator<<(unsigned long i) const;
+    bitVector operator&(bitVector B) const;
+    bitVector operator|(bitVector B) const;
+    bitVector operator~() const;
+    bitVector operator^(bitVector B) const;
     bool operator==(bitVector B) const;
     int  operator[](unsigned long i) const;
     TYPE accessWord(unsigned long i) const;
