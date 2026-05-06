@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdint.h>
-#includ2e "endian.h"
+#include "endian.h"
 
 char* u8toa(uint8_t a, char* buffer) {
 
