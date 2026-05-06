@@ -27,16 +27,20 @@ double worst_case_entropy(double setSize){ return log2(setSize); }
 
 // function that receives a strings and return a map of that strings chars probabilities
 priority_queue<Tree::Node*, vector<Tree::Node*>, Tree::compareNodes> probabilities_frequency(string S, bool prob){
-	map<char,Tree::Node*> res;
+	Tree::Node* table[256] = {};
 	double size = S.size();
-	for(long unsigned int c = 0; c < size;c++){
-		auto aux = res.find(S[c]);
-		if (aux != res.end()) res[S[c]]->frequency+=1.0;
-		else res.insert({S[c], new Tree::Node(S[c],1.0)});
+	for(char c : S){
+		unsigned char index = (unsigned char) c;
+		if(table[index])table[index]->frequency+=1.0;
+		else table[index] = new Tree::Node(c,1.0);
 	}
-	if (prob) for(auto& i: res){ i.second->frequency /= size; }
 	priority_queue<Tree::Node*, vector<Tree::Node*>, Tree::compareNodes> pq;
-	for(auto& it : res) { pq.push(it.second); }
+	for(int i = 0; i<256;i++){
+		if(table[i]){
+			if(prob)table[i]->frequency/=size;
+			pq.push(table[i]);
+		}
+	}
 	return pq;
 }
 
@@ -58,8 +62,9 @@ Tree::Node* build_huffman(priority_queue<Tree::Node*, vector<Tree::Node*>, Tree:
 // travels a huffman tree and encode the nodes
 void huffman_coding(Tree::Node* root, map<char,string>& arr, string curr){
 	if(!root)return;
-	if(root->data!='$' && !root->left && !root->right){ 
+	if(!root->left && !root->right){ 
 		if(curr!="")arr.insert({root->data,curr});
+		else arr.insert({root->data,"0"});
 		return;
 	}
 	huffman_coding(root->left,arr,curr+'0');

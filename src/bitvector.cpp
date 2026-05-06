@@ -13,12 +13,16 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include <cassert>
-#include "../include/bitvector.h"
-#include "../include/jacobsonrank.h"
+#include "bitvector.h"
+#include <cmath>
+#include "nlohmann/json.hpp"
+
 
 #include <cmath>
 #include <iostream>
 using namespace std;
+
+// using json = nlohmann::json
 
 #ifndef bitMask
 #ifdef IS32BIT
@@ -194,8 +198,8 @@ void bitVector::append1() {
     set1(_size++);
 }
 
-unsigned long bitVector::size() const { return _size; }
-unsigned long bitVector::cap() const { return _cap; }
+size_t bitVector::size() const { return _size; }
+size_t bitVector::cap() const { return _cap; }
 
 /**
     Coloca uma sequencia predefinida de bits ao final do bitvector.
@@ -436,4 +440,23 @@ bitVector bitVector::operator~() const{
     return newB;
 }
 
+nlohmann::json bitVector::JSONSerialize() {
+    nlohmann::json j;
+    string s = "";
+    for(uint32_t i = 0; i < _size; i++) {
+        s += to_string((*this)[i]);
+        s += " ";
+    }
+    j["Content"] = s;
+    j["Size"] = to_string( _size);
+    j["Cap"] = to_string( _cap);
+    j["Ratio"] = to_string( ratio);
+    return j;
+}
+
+string bitVector::JSONDeserialize(nlohmann::json j){
+    return j.dump(4);
+}
+
 #undef bitMask
+

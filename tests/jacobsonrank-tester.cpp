@@ -3,138 +3,92 @@
 #include <iostream>
 #include <chrono>
 #include <math.h>
+#include <string>
+#include <time.h>
 #include <cstdlib>
 
 //std::popcount
 //usar de ref len NBIS
 
-int main(void){
-	string ss = " NAO ";
-	std::cout << "\n";
-	std::cout << "===============================================================" << std::endl;
-	std::cout << "OS TESTES A SEGUIR USARAM CHUNK SIZE: "; 
-#ifdef _nbits
-	std::cout << "NBITS e NBITS*NBITS" << std::endl;
-#endif
-#ifdef _nbits512
-	std::cout << "NBITS e 512*NBITS" << std::endl;
-#endif
-#ifdef _log
-	std::cout << "logN e logN*logN" << std::endl;
-#endif
-#ifdef selectstructure
-	ss = " ";
-#endif
-	std::cout << "\n\n";
-	std::cout << "ALEM DISSO, ELES" << ss << "USARAM A ESTRUTURA AUXILIAR DE SELECT" << std::endl;
-	std::cout << "===============================================================" << std::endl;
-	std::cout << "\n\n\n";
-	//size < 10000000000
-	for (long long unsigned size = 1000; size < 1000000; size *= 10) {
-		auto B1 = bitVector(64,2.0);
-		int ordem = log10(size);
+int main(int argc, char *argv[]) {
+    bool verbose = false;
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") == 0)
+            verbose = true;
+    }
 
-		for(TYPE i = 0; i < size; i++){
-		    if(rand() % 2 == 0){
-			B1.append1();
-		    }else{
-			B1.append0();
-		    }
-		}
-		auto R1 = JacobsonRank(&B1);
-		#ifdef selectstructure
-		auto start = std::chrono::high_resolution_clock::now();
-		R1.build_select1(&B1);
-		auto end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double, std::milli> ms_double = end - start;
-		std::cout << "Tempo de construção da estrutura de select1 de ordem "  << ordem << ": "<< ms_double.count() << " ms\n";
-		#endif
-		start = std::chrono::high_resolution_clock::now();
-		for (int i = 0; i < 4 * size / 10; i++)
-		{
-		    unsigned long long foo = 1 + (foo > 1 ? rand() % (4 * size / 10) : 0);
-		    R1.select1(&B1, foo);
-			// B1::naive_select1(foo);
-		}
-		end = std::chrono::high_resolution_clock::now();
-		ms_double = end - start;
-		std::cout << "Tempo de " << 4 * size / 10 << " operações select1: " << ms_double.count() << " ms\n\n";
-	}
-	std::cout << "\n" << "\n" << "\n";
-	for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
-		auto B2 = bitVector(64,2.0);
-		int ordem = log10(size);
+    if (verbose) {
+        string ss = " NAO ";
+        std::cout << "\n";
+        std::cout
+            << "==============================================================="
+            << std::endl;
+        std::cout << "OS TESTES A SEGUIR USARAM CHUNK SIZE: ";
 
-		for(TYPE i = 0; i < size; i++){
-		    if(rand() % 2 == 0){
-			B2.append1();
-		    }else{
-			B2.append0();
-		    }
-		}
-		auto R2 = JacobsonRank(&B2);
-		#ifdef selectstructure
-		auto start = std::chrono::high_resolution_clock::now();
-		R2.build_select0(&B2);
-		auto end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double, std::milli> ms_double = end - start;
-		std::cout << "Tempo de construção da estrutura de select0 de ordem "  << ordem << ": "<< ms_double.count() << " ms\n";
-		#endif
-		start = std::chrono::high_resolution_clock::now();
-		for (int i = 0; i < 4 * size / 10; i++)
-		{
-		    unsigned long long foo = rand() % (4 * size / 10);
-		    R2.select0(&B2, foo);
-			// B2::naive_select0(foo);
-		}
-		end = std::chrono::high_resolution_clock::now();
-		ms_double = end - start;
-		std::cout << "Tempo de " << 4 * size / 10 << " operações select0: " << ms_double.count() << " ms\n\n";
-    	}
-	std::cout << "\n" << "\n" << "\n";
-	for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
-		auto B3 = bitVector(64,2.0);
-		int ordem = log10(size);
+        #ifdef _nbits
+        std::cout << "NBITS e NBITS*NBITS" << std::endl;
+        #endif
 
-		for(TYPE i = 0; i < size; i++){
-		    if(rand() % 2 == 0){
-			B3.append1();
-		    }else{
-			B3.append0();
-		    }
-		}
-		auto R3 = JacobsonRank(&B3);
-		auto start = std::chrono::high_resolution_clock::now();
-		for (int i = 0; i < 4 * size /10; i++) {
-			unsigned long long foo = rand() % (4*size/10);
-			R3.rank1(&B3,foo);
-			// B3::naive_rank1(foo);
-		}
-		auto end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double, std::milli> ms_double = end - start;
-		std::cout << "Tempo de " << 4 * size / 10 << " operações rank1: " << ms_double.count() << " ms\n\n";
-	}
-	std::cout << "\n" << "\n" << "\n";
-	for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
-		auto B4 = bitVector(64,2.0);
-		int ordem = log10(size);
+        #ifdef _nbits512
+        std::cout << "NBITS e 512*NBITS" << std::endl;
+        #endif
 
-		for(TYPE i = 0; i < size; i++){
-		    if(rand() % 2 == 0){
-			B4.append1();
-		    }else{
-			B4.append0();
-		    }
-		}
-		auto R4 = JacobsonRank(&B4);
-		auto start = std::chrono::high_resolution_clock::now();
-		for (int i = 0; i < 4 * size /10; i++) {
-			unsigned long long foo = rand() % (4*size/10);
-			R4.rank0(&B4,foo);
-			// B4::naive_rank0(foo);
-		}
-		auto end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double, std::milli> ms_double = end - start;
-		std::cout << "Tempo de " << 4 * size / 10 << " operações rank0: " << ms_double.count() << " ms\n\n";
-	}    
+        #ifdef _log
+        std::cout << "logN e logN*logN" << std::endl;
+        #endif
+
+        #ifdef selectstructure
+        ss = " ";
+        #endif
+
+        std::cout << "\n\n";
+        std::cout << "ALEM DISSO, ELES" << ss << "USARAM A ESTRUTURA AUXILIAR DE SELECT" << std::endl;
+        std::cout << "===============================================================" << "\n\n\n\n";
+
+    } else {
+        std::cout << "\"Size\";\"Time\"\n";
+    }
+
+    for (long long unsigned size = 1000; size < 10000000; size *= 10) {
+        for(long long unsigned j = 0; j < 100; j++){
+            auto B1 = bitVector(64, 2.0);
+            int ordem = log10(size);
+
+            srand(time(0));
+            for (TYPE i = 0; i < size; i++) {
+                if (rand() % 2 == 0) {
+                    B1.append1();
+                } else {
+                    B1.append0();
+                }
+            }
+            B1.JacobsonRank_build();
+            auto start = std::chrono::high_resolution_clock::now();
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::nano> ns_double = end - start;
+            
+            #ifdef selectstructure
+            start = std::chrono::high_resolution_clock::now();
+            B1.build_select0();
+            // R1.build_select1(&B1);
+            end = std::chrono::high_resolution_clock::now();
+            ns_double = end - start;
+            if (verbose)
+                std::cout << "Tempo de construção da estrutura de select1 de ordem " << ordem << ": " << ns_double.count() << " ns\n";
+            #endif
+
+            srand(time(0));
+            unsigned long long index = rand() % (size);
+            // unsigned long long index = rand() % (size / 2);
+            auto start1 = std::chrono::high_resolution_clock::now();
+            B1.rank1(index);
+            auto end1 = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::nano> ns_double1 = end1 - start1;
+            if (verbose) {
+                std::cout << "Tempo de 1 operação select1: " << ns_double1.count() << " ns\n\n";
+            } else {
+                std::cout << size << ";" << ns_double1.count() << "\n";
+            }
+        }
+    }
 }
