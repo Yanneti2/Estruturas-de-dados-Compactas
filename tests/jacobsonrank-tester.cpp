@@ -3,7 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include <math.h>
-#include <string.h>
+#include <cstring>
 #include <time.h>
 #include <cstdlib>
 
@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) {
     bool verbose = false;
     for (int i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") == 0)
+        if (std::strcmp(argv[i], "-v") == 0 || std::strcmp(argv[i], "--verbose") == 0)
             verbose = true;
     }
 
@@ -49,42 +49,46 @@ int main(int argc, char *argv[]) {
         std::cout << "\"Size\";\"Time\"\n";
     }
 
-    for (long long unsigned size = 1000; size < 10000000000; size *= 10) {
-        auto B1 = bitVector(64, 2.0);
-        int ordem = log10(size);
+    for (long long unsigned size = 1000; size < 10000000; size *= 10) {
+        for(long long unsigned j = 0; j < 100; j++){
+            auto B1 = bitVector();
+            int ordem = log10(size);
 
-        srand(time(0));
-        for (TYPE i = 0; i < size; i++) {
-            if (rand() % 2 == 0) {
-                B1.append1();
-            } else {
-                B1.append0();
+            srand(time(0));
+            for (TYPE i = 0; i < size; i++) {
+                if (rand() % 2 == 0) {
+                    B1.append1();
+                } else {
+                    B1.append0();
+                }
             }
-        }
-        JacobsonRank R1(&B1);
-        auto start = std::chrono::high_resolution_clock::now();
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::nano> ns_double = end - start;
+            B1.JacobsonRank_build();
+            auto start = std::chrono::high_resolution_clock::now();
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::nano> ns_double = end - start;
+            
+            #ifdef selectstructure
+            start = std::chrono::high_resolution_clock::now();
+            B1.build_select0();
+            // R1.build_select1(&B1);
+            end = std::chrono::high_resolution_clock::now();
+            ns_double = end - start;
+            if (verbose)
+                std::cout << "Tempo de construção da estrutura de select1 de ordem " << ordem << ": " << ns_double.count() << " ns\n";
+            #endif
 
-        #ifdef selectstructure
-        start = std::chrono::high_resolution_clock::now();
-        // R1.build_select1(&B1);
-        end = std::chrono::high_resolution_clock::now();
-        ns_double = end - start;
-        if (verbose)
-            std::cout << "Tempo de construção da estrutura de select1 de ordem " << ordem << ": " << ns_double.count() << " ns\n";
-        #endif
-
-        srand(time(0));
-        unsigned long long index = rand() % (size / 2);
-        auto start1 = std::chrono::high_resolution_clock::now();
-        R1.rank1(&B1, index);
-        auto end1 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> ns_double1 = end1 - start1;
-        if (verbose) {
-            std::cout << "Tempo de 1 operação select1: " << ns_double1.count() << " ns\n\n";
-        } else {
-            std::cout << size << ";" << ns_double1.count() << "\n";
+            srand(time(0));
+            unsigned long long index = rand() % (size);
+            // unsigned long long index = rand() % (size / 2);
+            auto start1 = std::chrono::high_resolution_clock::now();
+            B1.rank1(index);
+            auto end1 = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::nano> ns_double1 = end1 - start1;
+            if (verbose) {
+                std::cout << "Tempo de 1 operação select1: " << ns_double1.count() << " ns\n\n";
+            } else {
+                std::cout << size << ";" << ns_double1.count() << "\n";
+            }
         }
     }
 }
