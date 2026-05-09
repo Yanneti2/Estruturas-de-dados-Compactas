@@ -32,8 +32,6 @@ using namespace std;
 #endif
 #endif
 
-#define ULL unsigned long long
-
 uint32_t bitMask32[] = {
     0xFFFFFFFF,0x7FFFFFFF,0x3FFFFFFF,0x1FFFFFFF,
     0x0FFFFFFF,0x07FFFFFF,0x03FFFFFF,0x01FFFFFF,
@@ -148,7 +146,6 @@ bool bitVector::operator==(bitVector B) const {
     }
     return true;
 }
-
 TYPE bitVector::accessWord(unsigned long i) const {
     return A[i];
 }
