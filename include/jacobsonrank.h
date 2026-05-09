@@ -1,10 +1,9 @@
 #include "endian.h"
+#include "bitvector.h"
 #include <cmath>
 
 #ifndef JACOBSONRANK
 #define JACOBSONRANK
-
-class bitVector;
 
 class JacobsonRank {
 private:
@@ -16,20 +15,17 @@ private:
     unsigned long long *layer1;
     short *layer2;
 
-    unsigned long long *select_vector0;
-    unsigned long long *select_vector1;
+    unsigned long long *select_vector;
     unsigned long long select_j;
 
 public:
-    JacobsonRank();
-    JacobsonRank(bitVector *B);
+    JacobsonRank(bitVector *B, bool fixSizeToWordSize = false);
     ~JacobsonRank();
     unsigned long long rank0(bitVector *B, unsigned long long i);
     unsigned long long rank1(bitVector *B, unsigned long long i);
     void print();
 
-    void build_select0(bitVector *B);
-    void build_select1(bitVector *B);
+    void build_select(bitVector *B);
     unsigned long long select0(bitVector *B, unsigned long long i);
     unsigned long long select1(bitVector *B, unsigned long long i);
 };
