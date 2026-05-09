@@ -3,7 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include <math.h>
-#include <string.h>
+#include <cstring>
 #include <time.h>
 #include <cstdlib>
 
@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) {
     bool verbose = false;
     for (int i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") == 0)
+        if (std::strcmp(argv[i], "-v") == 0 || std::strcmp(argv[i], "--verbose") == 0)
             verbose = true;
     }
 

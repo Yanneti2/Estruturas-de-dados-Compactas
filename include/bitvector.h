@@ -1,5 +1,5 @@
 #include <cstdint>
-#include "../include/jacobsonrank.h"
+#include "jacobsonrank.h"
 
 #ifndef BITVECTOR
 #define BITVECTOR
