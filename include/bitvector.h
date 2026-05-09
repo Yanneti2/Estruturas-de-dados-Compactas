@@ -27,7 +27,6 @@ private:
     TYPE *A;   // The bitvector itself
     unsigned long _cap;  // The number of words of A.
     unsigned long _size;  // The lenght of the bit sequence (logical). 
-    float ratio;        // The growing factor.
     JacobsonRank *rank; // The rank structure.
 
 public:
@@ -37,7 +36,10 @@ public:
     unsigned long cap() const;
 
     // Methods implemented by GPT (originals and modded)
-    bitVector(unsigned long capacity, float growth_ratio);
+    bitVector();
+    bitVector(unsigned long size);
+    bitVector(unsigned long size, int init);
+    bitVector(unsigned long size, bool (*fn)(unsigned long));
     ~bitVector();
 
     void append0();

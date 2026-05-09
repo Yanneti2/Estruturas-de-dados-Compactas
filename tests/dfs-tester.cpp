@@ -19,7 +19,7 @@ int main (void){
 		aux = aux->left;
 			
 	}
-	bitVector* B1 = new bitVector(64,2.0); //size = 22
+	bitVector* B1 = new bitVector(); //size = 22
 	dfs_bt(B1,r1);
 	B1->print();
 	//vector<int> v;
@@ -34,7 +34,7 @@ int main (void){
 	r2->right = t2->create_node();
 	Tree::Node* au = r2->left;
 	au->left = t2->create_node();
-	bitVector* B2 = new bitVector(64,2.0); //size = 8
+	bitVector* B2 = new bitVector(); //size = 8
 	dfs_bt(B2,r2);
 	B2->print();
 	//vector<int> h;
@@ -49,7 +49,7 @@ int main (void){
 	Tree::Node* a = r3->left;
 	a->left = t3->create_node();
 	a->right = t3->create_node();
-	bitVector* B3 = new bitVector(64, 2.0); //size = 8
+	bitVector* B3 = new bitVector(); //size = 8
 	dfs_bt(B3,r3);
 	B3->print();
 	//vector<int> t; dfs_bt2(t, r3);
@@ -69,7 +69,7 @@ int main (void){
 	Gtree* g1 = new Gtree();
 	Gtree::gNode* rg1 = g1->getRoot();
 	for (int i = 0; i < 3; i++){ g1->append_nnode(rg1); }
-	bitVector* B4 = new bitVector(64,2.0);	
+	bitVector* B4 = new bitVector();	
 	dfs_gt(B4,rg1);
 	B4->print();
 	//vector<char> nn;
@@ -84,7 +84,7 @@ int main (void){
 	g2->add_node(rg2,dummy);
 	for (int i = 0; i < 3; i++)g2->append_nnode(dummy);
 	g2->append_nnode(rg2);
-	bitVector* B5 = new bitVector(64,2.0);
+	bitVector* B5 = new bitVector();
 	dfs_gt(B5,rg2);
 	B5->print();
 	//vector<char> n;
@@ -95,7 +95,7 @@ int main (void){
 	Gtree* g3 = new Gtree();
 	Gtree::gNode* rg3 = g3->getRoot();
 	for (int i = 0; i < 4; i++){ g3->append_nnode(rg3); }
-	bitVector* B6 = new bitVector(64,2.0);	
+	bitVector* B6 = new bitVector();	
 	dfs_gt(B6,rg3);
 	B6->print();
 	//vector<char> b;
@@ -135,7 +135,7 @@ int main (void){
 	bp_build(naoexiste,rgg);
 	for(int i=0;i<naoexiste.size();i++)std::cout << naoexiste[i];
 	std::cout << "\n";
-	bitVector* B7 = new bitVector(64,2.0);
+	bitVector* B7 = new bitVector();
 	dfs_gt(B7, rgg);
 	B7->print();
 	//string str = "";
@@ -182,7 +182,7 @@ int main (void){
 	loud->append_nnode(twelve);
 	loud->append_nnode(twelve);
 	loud->append_nnode(fourteen);
-	bitVector* B8 = new bitVector(64,2.0);
+	bitVector* B8 = new bitVector();
 	//build_louds(bitVector* B, Gtree::gNode* node);
 	build_louds(B8,one);
 	B8->print();
@@ -197,7 +197,7 @@ int main (void){
 	house->append_nnode(lchild);
 	house->append_nnode(lchild);
 	house->append_nnode(rchild);
-	bitVector* B9 = new bitVector(1,2.0);
+	bitVector* B9 = new bitVector();
 	build_louds(B9,raiz);
 	B9->print();
 	

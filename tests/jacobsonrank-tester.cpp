@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     for (long long unsigned size = 1000; size < 10000000; size *= 10) {
         for(long long unsigned j = 0; j < 100; j++){
-            auto B1 = bitVector(64, 2.0);
+            auto B1 = bitVector();
             int ordem = log10(size);
 
             srand(time(0));

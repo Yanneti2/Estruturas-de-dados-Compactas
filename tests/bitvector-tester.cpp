@@ -7,8 +7,8 @@ using namespace std;
 int main(void){
     unsigned long long size = 10000;
     // printar vetor inicilizado
-    auto B1 = bitVector(64,2.0);
-    auto B2 = bitVector(64,2.0);
+    auto B1 = bitVector();
+    auto B2 = bitVector();
     std::cout << std::endl << std::endl;
     // vetor na forma 10000100001....
     for (unsigned long long i = 0; i < size; i++){
@@ -30,7 +30,7 @@ int main(void){
     B1.extend(&B2);
     B1.print();
 
-    auto B3 = bitVector(64, 1.5);
+    auto B3 = bitVector();
     for (TYPE i = 0; i<size; i++){
         if (rand() & 1){
             B3.append1();
@@ -41,7 +41,7 @@ int main(void){
     std::cout << "B3" << std::endl;
     B3.print();
     // Teste de operacoes Put & Slice:
-    auto B4 = bitVector(64, 1.5);
+    auto B4 = bitVector();
     for (TYPE i = 0; i<size; i++){
         B4.append1();
     }
@@ -56,7 +56,7 @@ int main(void){
     // TA CORROMPENDO COM O GROW == 1.5!!!!!
     // OLHAR FUNCAO GROW, ACHO Q EH O PISO!!
 
-    // bitVector* B7 = new bitVector(64, 1.5);
+    // bitVector* B7 = new bitVector();
     // for (TYPE i = 0; i<size; i++){
     //     if (rand() & 1){
     //         B7->append1();
@@ -74,7 +74,7 @@ int main(void){
     // B8->print();
     // return 0;
 
-    auto BV = bitVector(8,2.0);
+    auto BV = bitVector();
 
     std::cout << "BV:" << std::endl;
     for (int j = 0; j < 8; j++) {
@@ -82,7 +82,7 @@ int main(void){
         else BV.append0();
     }
     BV.print();
-    bitVector* BV2 = new bitVector(8,2.0);
+    bitVector* BV2 = new bitVector();
     for (int j = 0; j < 8; j++) {
         BV2->append1();
     }

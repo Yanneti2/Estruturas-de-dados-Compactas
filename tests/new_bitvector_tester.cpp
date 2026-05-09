@@ -9,7 +9,7 @@ int main(void){
     // for (long long unsigned size = 1000; size < 100000; size *= 10) {
 
     for (long long unsigned size = 10; size < 100; size *= 10) {
-		auto B1 = bitVector(64,2.0);
+		auto B1 = bitVector();
 		int ordem = log10(size);
 
 		for(TYPE i = 0; i < size; i++){

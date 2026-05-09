@@ -70,19 +70,71 @@ uint64_t bitMask64[] = {
 **/
 
 // Initializes a bitvector instance
-bitVector::bitVector(unsigned long cap, float growth_ratio) {
+bitVector::bitVector() {
 
     assert(sizeof(TYPE) * 8 == NBITS);
 
-    _cap = (cap == 0 ? 0 : (cap + (NBITS - 1)) / NBITS);
+    _cap = 1;
     _size = 0;
-    ratio = growth_ratio;
 
-    A = (TYPE*) calloc(_cap ,sizeof(unsigned long));
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
     if (!A)
         throw new bad_alloc();
 }
 
+bitVector::bitVector(unsigned long size) {
+    
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    _cap = (size + NBITS - 1) / NBITS;
+    _cap = (_cap == 0) ? 1 : _cap;
+    _size = 0;
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
+    if (!A)
+        throw new bad_alloc();
+}
+
+bitVector::bitVector(unsigned long size, int init) {
+
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    _cap = (size + NBITS - 1) / NBITS;
+    _cap = (_cap == 0) ? 1 : _cap;
+    _size = size;
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
+    if (!A)
+        throw new bad_alloc();
+
+    if (init == 0) return;
+
+    for (unsigned long i = 0; i < _cap - 1; i++) {
+        A[i] = -1;
+    }
+    A[_cap - 1] = ~bitMask(_size % NBITS);
+}
+
+bitVector::bitVector(unsigned long size, bool (*fn)(unsigned long)) {
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    _cap = (size + NBITS - 1) / NBITS;
+    _cap = (_cap == 0) ? 1 : _cap;
+    _size = size;
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
+    if (!A)
+        throw new bad_alloc();
+    
+    for (unsigned long i = 0; i < _size; i++) {
+        if (fn(i))
+            this->set1(i);
+    }
+}
 // Frees the memory dinamically alocated to store the bitvector
 bitVector::~bitVector() {
     free(A);
@@ -169,7 +221,7 @@ void bitVector::append0() {
 
     if (_size == NBITS * _cap)
     {
-        unsigned long new_cap = ceil(_cap * ratio);
+        unsigned long new_cap = ceil(_cap * 1.5);
         if (new_cap <= _cap)
             new_cap = _cap + 1;
         grow(new_cap);
@@ -185,7 +237,7 @@ void bitVector::append1() {
 
     if (_size == NBITS * _cap)
     {
-        unsigned long new_cap = ceil(_cap * ratio);
+        unsigned long new_cap = ceil(_cap * 1.5);
         if (new_cap <= _cap)
             new_cap = _cap + 1;
         grow(new_cap);
@@ -205,7 +257,7 @@ void bitVector::extend(bitVector* B) {
 
     while(!((_size + B->size() + NBITS - 1) / NBITS <= _cap))
     {
-        unsigned long new_cap = (unsigned long) ceil(_cap * ratio);
+        unsigned long new_cap = (unsigned long) ceil(_cap * 1.5);
         if (new_cap <= _cap)
             new_cap = _cap + 1;
         grow(new_cap);
@@ -232,7 +284,7 @@ void bitVector::extend(bitVector* B) {
     Copy a part of original bitvector into another bitvector and returns the new one.
 **/
 bitVector* bitVector::slice(unsigned long i, unsigned long k) const {
-    bitVector* Bnew = new bitVector((k + NBITS - 1)  / NBITS, 1.5);
+    bitVector* Bnew = new bitVector();
     if (i + k > _size)
         throw std::out_of_range("slice out of bounds");
     for (unsigned long j = 0; j < k; j++) {
@@ -259,7 +311,7 @@ void bitVector::put(bitVector* B, unsigned long i) {
    \brief Print the bit array on the screen.
 **/
 void bitVector::print() const {
-    printf("len: %ld, cap: %ld, ratio: %f\n", _size, _cap, ratio);
+    printf("size: %ld, cap: %ld\n", _size, _cap);
     for (unsigned long long i=0; i< _size; i++) {
         printf("%d", (*this)[i]);
     }

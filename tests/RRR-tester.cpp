@@ -10,7 +10,7 @@ int main(void) {
     srand(time(0));
     cout << "\"Size\";\"Time\"\n";
     for (long long unsigned size = 1000; size < 10000; size *= 10) {
-        bitVector B(64, 2.0);
+        bitVector B = bitVector();
         int order = log10(size);
         // cout << "Order: " << order << endl;
 
