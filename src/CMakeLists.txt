@@ -1,6 +1,9 @@
 add_library(compact
         bitvector.cpp
+        bp.cpp
+        huffman.cpp
         jacobsonrank.cpp
+        louds.cpp
 )
 
 target_include_directories(compact PUBLIC ${CMAKE_SOURCE_DIR}/include)
