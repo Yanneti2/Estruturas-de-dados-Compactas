@@ -10,7 +10,9 @@ add_executable(bitvectorRRR-tester
         bitvectorRRR-tester.cpp
 )
 
-target_link_libraries(bitvectorRRR-tester compact)
+target_link_libraries(bitvectorRRR-tester libgpt)
+target_compile_definitions(bitvectorRRR-tester PRIVATE DEBUG)
+
 
 
 add_executable(huffman-tester
@@ -43,8 +45,9 @@ add_executable(ll2-tester
 )
 target_link_libraries(ll2-tester utils)
 
-add_executable(utils-tester
-        utils-tester.cpp
-)
-
-target_link_libraries(utils-tester compact)
+# TODO: Fix this
+# add_executable(utils-tester
+#         utils-tester.cpp
+# )
+# 
+# target_link_libraries(utils-tester libgpt compact)

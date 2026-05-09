@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-#include "bitsequence.h"
-#include "mask01.h"
+#include "GPT-originals/bitsequence.h"
+#include "masks/mask01.h"
 
 // Masks with a single 1 at bit i:
 #define masks1(i) (0x8000000000000000 >> (i))
