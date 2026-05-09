@@ -1,23 +1,23 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+add_executable(binary_tree-tester
+        binary_tree-tester.cpp
+)
+
+target_link_libraries(binary_tree-tester compact)
+
+add_executable(bitvectorRRR-tester
+        bitvectorRRR-tester.cpp
+)
+
+target_link_libraries(bitvectorRRR-tester compact)
 
 
-# Desativados pois dependem do libgpt, que atualmente nao compila
+add_executable(huffman-tester
+        huffman-tester.cpp
+)
 
-# add_executable(bits-tester
-#         bits-tester.cpp
-# )
-# 
-# target_link_libraries(bits-tester PRIVATE libgpt)
-#
-# add_executable(endian-tester
-#         endian-tester.c
-# )
-# target_link_libraries(endian-tester PRIVATE libgpt)
-# add_executable(uarray-tester
-#         uarray-tester.c
-# )
-# target_link_libraries(uarray-tester PRIVATE libgpt)
+target_link_libraries(huffman-tester compact)
 
 
 add_executable(bitvector-tester
@@ -42,3 +42,9 @@ add_executable(ll2-tester
         ll2-tester.cpp
 )
 target_link_libraries(ll2-tester utils)
+
+add_executable(utils-tester
+        utils-tester.cpp
+)
+
+target_link_libraries(utils-tester compact)
