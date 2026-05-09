@@ -13,16 +13,12 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include <cassert>
-#include "bitvector.h"
-#include <cmath>
-#include "nlohmann/json.hpp"
-
+#include "../include/bitvector.h"
+#include "../include/jacobsonrank.h"
 
 #include <cmath>
 #include <iostream>
 using namespace std;
-
-// using json = nlohmann::json
 
 #ifndef bitMask
 #ifdef IS32BIT
@@ -31,6 +27,8 @@ using namespace std;
 #define bitMask(i) bitMask64[(i)]
 #endif
 #endif
+
+#define ULL unsigned long long
 
 uint32_t bitMask32[] = {
     0xFFFFFFFF,0x7FFFFFFF,0x3FFFFFFF,0x1FFFFFFF,
@@ -72,19 +70,71 @@ uint64_t bitMask64[] = {
 **/
 
 // Initializes a bitvector instance
-bitVector::bitVector(unsigned long cap, float growth_ratio) {
+bitVector::bitVector() {
 
     assert(sizeof(TYPE) * 8 == NBITS);
 
-    _cap = (cap == 0 ? 0 : (cap + (NBITS - 1)) / NBITS);
+    _cap = 1;
     _size = 0;
-    ratio = growth_ratio;
 
-    A = (TYPE*) calloc(_cap ,sizeof(unsigned long));
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
     if (!A)
         throw new bad_alloc();
 }
 
+bitVector::bitVector(unsigned long size) {
+    
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    _cap = (size + NBITS - 1) / NBITS;
+    _cap = (_cap == 0) ? 1 : _cap;
+    _size = 0;
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
+    if (!A)
+        throw new bad_alloc();
+}
+
+bitVector::bitVector(unsigned long size, int init) {
+
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    _cap = (size + NBITS - 1) / NBITS;
+    _cap = (_cap == 0) ? 1 : _cap;
+    _size = size;
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
+    if (!A)
+        throw new bad_alloc();
+
+    if (init == 0) return;
+
+    for (unsigned long i = 0; i < _cap - 1; i++) {
+        A[i] = -1;
+    }
+    A[_cap - 1] = ~bitMask(_size % NBITS);
+}
+
+bitVector::bitVector(unsigned long size, bool (*fn)(unsigned long)) {
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    _cap = (size + NBITS - 1) / NBITS;
+    _cap = (_cap == 0) ? 1 : _cap;
+    _size = size;
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
+    if (!A)
+        throw new bad_alloc();
+    
+    for (unsigned long i = 0; i < _size; i++) {
+        if (fn(i))
+            this->set1(i);
+    }
+}
 // Frees the memory dinamically alocated to store the bitvector
 bitVector::~bitVector() {
     free(A);
@@ -146,6 +196,7 @@ bool bitVector::operator==(bitVector B) const {
     }
     return true;
 }
+
 TYPE bitVector::accessWord(unsigned long i) const {
     return A[i];
 }
@@ -170,7 +221,7 @@ void bitVector::append0() {
 
     if (_size == NBITS * _cap)
     {
-        unsigned long new_cap = ceil(_cap * ratio);
+        unsigned long new_cap = ceil(_cap * 1.5);
         if (new_cap <= _cap)
             new_cap = _cap + 1;
         grow(new_cap);
@@ -186,7 +237,7 @@ void bitVector::append1() {
 
     if (_size == NBITS * _cap)
     {
-        unsigned long new_cap = ceil(_cap * ratio);
+        unsigned long new_cap = ceil(_cap * 1.5);
         if (new_cap <= _cap)
             new_cap = _cap + 1;
         grow(new_cap);
@@ -195,8 +246,8 @@ void bitVector::append1() {
     set1(_size++);
 }
 
-size_t bitVector::size() const { return _size; }
-size_t bitVector::cap() const { return _cap; }
+unsigned long bitVector::size() const { return _size; }
+unsigned long bitVector::cap() const { return _cap; }
 
 /**
     Coloca uma sequencia predefinida de bits ao final do bitvector.
@@ -206,7 +257,7 @@ void bitVector::extend(bitVector* B) {
 
     while(!((_size + B->size() + NBITS - 1) / NBITS <= _cap))
     {
-        unsigned long new_cap = (unsigned long) ceil(_cap * ratio);
+        unsigned long new_cap = (unsigned long) ceil(_cap * 1.5);
         if (new_cap <= _cap)
             new_cap = _cap + 1;
         grow(new_cap);
@@ -233,7 +284,7 @@ void bitVector::extend(bitVector* B) {
     Copy a part of original bitvector into another bitvector and returns the new one.
 **/
 bitVector* bitVector::slice(unsigned long i, unsigned long k) const {
-    bitVector* Bnew = new bitVector((k + NBITS - 1)  / NBITS, 1.5);
+    bitVector* Bnew = new bitVector();
     if (i + k > _size)
         throw std::out_of_range("slice out of bounds");
     for (unsigned long j = 0; j < k; j++) {
@@ -260,122 +311,88 @@ void bitVector::put(bitVector* B, unsigned long i) {
    \brief Print the bit array on the screen.
 **/
 void bitVector::print() const {
-    printf("len: %ld, cap: %ld, ratio: %f\n", _size, _cap, ratio);
+    printf("size: %ld, cap: %ld\n", _size, _cap);
     for (unsigned long long i=0; i< _size; i++) {
-        printf("%d ", (*this)[i]);
+        printf("%d", (*this)[i]);
     }
     printf("\n\n");
 }
 
-bitVector bitVector::operator<<(unsigned long i) const{
-    bitVector newBitV = bitVector(this->cap(), this->ratio);
-    // 0 0 1 0 0 << 2 1 0 0 0 0 
-    for (int64_t I = i; I < this->size(); I++) {
-        if((*this)[I])
-            newBitV.append1();
-        else
-            newBitV.append0();
-        }
-    for (int64_t I = 0; I < i; I++)
-        newBitV.append0();
-    return newBitV;
+unsigned long bitVector::popcount(){
+    unsigned long pop_count = 0; 
+    for(unsigned long i = 0; i < _size; i++){
+        pop_count += std::__popcount(accessWord(i));
+    }
+    return pop_count;
 }
 
-bitVector bitVector::operator>>(unsigned long i) const{
-    bitVector newBitV = bitVector(this->cap(), this->ratio);
-    for (int64_t I = 0; I < i; I++)
-        newBitV.append0();
-    for (int64_t I = 0; I < this->size() - i; I++) {
-        if((*this)[I]) {
-            newBitV.append1();
-        }
-        else
-            newBitV.append0();
+unsigned long bitVector::naive_rank1(unsigned long long i){
+    unsigned pop_count = 0;
+    unsigned long j;
+    for(j = 0; j < (i - 1)/NBITS; j++){
+        //unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~bitMask(i % chunk2_size));
+        // & ~bitMask(i%B->size())
+        pop_count += std::__popcount(accessWord(i));
     }
-    return newBitV;
+    // pop_count += std::__popcount(accessWord(_size - i));
+    pop_count += std::__popcount(accessWord(j) & ~bitMask(i % NBITS));
+    return pop_count;
 }
 
-bool bitVector::issameSize(bitVector B) const{
-    if(this->size() != B.size()) {
-        return false;
-    }
-    return true;
+unsigned long bitVector::naive_rank0(unsigned long long i){
+    return i - naive_rank1(i); 
 }
 
-bitVector bitVector::operator&(bitVector B) const{
-    if(!(this->issameSize(B))) {
-        throw runtime_error("Tamanhos diferentes");
-    }
-
-    bitVector newB = bitVector(this->cap(), this->ratio);
-    for (int64_t i = 0; i < this->size(); i++) {
-        if ((*this)[i] and B[i]) 
-            newB.append1();
-        else    
-            newB.append0();
-    }
-    return newB;
-}   
-
-bitVector bitVector::operator|(bitVector B) const{
-    if(!(this->issameSize(B))) {
-        throw runtime_error("Tamanhos diferentes");
-    }
-    bitVector newB = bitVector(this->cap(), this->ratio);
-    for(uint64_t i; i < this->size(); i++) {
-        if((*this)[i] or B[i]) {
-            newB.append1();
-        }
-        else
-            newB.append0();
-    }
-    return newB;
+ULL bitVector::select1(ULL i){
+    return rank->select1(this, i);
 }
 
-bitVector bitVector::operator^(bitVector B) const{
-    if(!(this->issameSize(B))) {
-        throw runtime_error("Tamanhos diferentes");
-    }
-    bitVector newB = bitVector(this->cap(), this->ratio);
-    for(uint64_t i; i < this->size(); i++) {
-        if(((*this)[i] or B[i]) and (!((*this)[i]) or !(B[i]))) {
-            newB.append1();
-        }
-        else
-            newB.append0();
-    }
-    return newB;
+ULL bitVector::select0(ULL i){
+    return rank->select0(this, i);
+}
+    
+void bitVector::JacobsonRank_build(){
+    //if(rank){delete rank;}
+    rank = new JacobsonRank(this);
 }
 
-bitVector bitVector::operator~() const{
-   bitVector newB = bitVector(this->cap(), this->ratio);
-    for(uint64_t i = 0; i < this->size(); i++) {
-        if(((*this)[i])) {
-            newB.append0();
-        }
-        else
-            newB.append1();
+unsigned long long bitVector::rank0(unsigned long long i){
+    return rank->rank0(this, i);
+}
+
+unsigned long long bitVector::rank1(unsigned long long i){
+    return rank->rank1(this, i);
+}
+
+void bitVector::print_rank(){
+    rank->print();
+}
+
+void bitVector::build_select0(){
+    rank->build_select0(this);
+}
+
+void bitVector::build_select1(){
+    rank->build_select1(this);
+}
+
+unsigned long bitVector::naive_select1(unsigned long long i){
+    unsigned long pop_count = 0;
+    unsigned long j;
+    for(j = 0; j < _size; j++){
+        if(pop_count == i) return j;
+        pop_count += (*this) [j];
     }
-    return newB;
+    return -1;
 }
 
-nlohmann::json bitVector::JSONSerialize() {
-    nlohmann::json j;
-    string s = "";
-    for(uint32_t i = 0; i < _size; i++) {
-        s += to_string((*this)[i]);
-        s += " ";
+unsigned long bitVector::naive_select0(unsigned long long i){
+    unsigned long counter = 0;
+    unsigned long j = 0;
+    for(j = 0;  j < _size; j++){
+        if((j - counter) == i) return j;
+        counter += (*this) [j];
     }
-    j["Content"] = s;
-    j["Size"] = to_string( _size);
-    j["Cap"] = to_string( _cap);
-    j["Ratio"] = to_string( ratio);
-    return j;
+    return -1;
 }
-
-string bitVector::JSONDeserialize(nlohmann::json j){
-    return j.dump(4);
-}
-
 #undef bitMask
-

@@ -1,6 +1,5 @@
 #include <cstdint>
-#include "nlohmann/json.hpp"
-
+#include "jacobsonrank.h"
 
 #ifndef BITVECTOR
 #define BITVECTOR
@@ -20,37 +19,36 @@
 
 using namespace std;
 
+class JacobsonRank;
+
 class bitVector {
     // TODO: *a should be unsigned long???
 private:
     TYPE *A;   // The bitvector itself
-    size_t _cap;  // The number of words of A.
-    size_t _size;  // The lenght of the bit sequence (logical). 
-    float ratio;        // The growing factor;
+    unsigned long _cap;  // The number of words of A.
+    unsigned long _size;  // The lenght of the bit sequence (logical). 
+    JacobsonRank *rank; // The rank structure.
 
 public:
     // Methods implemented post GPT (originals by stringers)
     int grow(unsigned long ncap);
-    size_t size() const;
-    size_t cap() const;
-    nlohmann::json JSONSerialize();
-    string JSONDeserialize(nlohmann::json j);
+    unsigned long size() const;
+    unsigned long cap() const;
+
     // Methods implemented by GPT (originals and modded)
-    bitVector(unsigned long capacity = 1, float growth_ratio = 2);
+    bitVector();
+    bitVector(unsigned long size);
+    bitVector(unsigned long size, int init);
+    bitVector(unsigned long size, bool (*fn)(unsigned long));
     ~bitVector();
-    bool issameSize(bitVector B) const;
+
     void append0();
     void append1();
     void set0(unsigned long i);
     void set1(unsigned long i);
     void extend(bitVector *B);
     void put(bitVector *B, unsigned long i);
-    bitVector operator>>(unsigned long i) const;
-    bitVector operator<<(unsigned long i) const;
-    bitVector operator&(bitVector B) const;
-    bitVector operator|(bitVector B) const;
-    bitVector operator~() const;
-    bitVector operator^(bitVector B) const;
+
     bool operator==(bitVector B) const;
     int  operator[](unsigned long i) const;
     TYPE accessWord(unsigned long i) const;
@@ -63,6 +61,22 @@ public:
     void append(unsigned long number, unsigned long k);
 
     void print() const;
+
+    unsigned long naive_rank1(unsigned long long i);
+    unsigned long naive_rank0(unsigned long long i);
+    unsigned long naive_select1(unsigned long long i);
+    unsigned long naive_select0(unsigned long long i);
+    unsigned long popcount();
+
+    unsigned long long select1(unsigned long long i);
+    unsigned long long select0(unsigned long long i);
+    void JacobsonRank_build();
+    unsigned long long rank0(unsigned long long i);
+    unsigned long long rank1(unsigned long long i);
+    void print_rank();
+
+    void build_select0();
+    void build_select1();
 };
 
 #endif
