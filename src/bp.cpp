@@ -1,9 +1,8 @@
-#include "../include/binary_tree.h"
-#include "../include/bitvector.h"
-#include "../include/bp.h"
-#include "../include/general_tree.h"
+#include "binary_tree.h"
+#include "bitvector.h"
+#include "bp.h"
+#include "general_tree.h"
 #include <vector>
-#include <string>
 
 #define ULI unsigned long int
 

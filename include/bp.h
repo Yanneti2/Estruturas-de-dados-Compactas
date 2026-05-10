@@ -1,7 +1,6 @@
 #include "binary_tree.h"
 #include "general_tree.h"
 #include <vector>
-#include <string>
 
 #ifndef ESTRUTURAS_DE_DADOS_COMPACTAS_BP
 #define ESTRUTURAS_DE_DADOS_COMPACTAS_BP
