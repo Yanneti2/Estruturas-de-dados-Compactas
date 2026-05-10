@@ -1,5 +1,6 @@
 #include "binary_tree.h"
 #include "general_tree.h"
+#include "bitvector.h"
 #include <vector>
 
 #ifndef ESTRUTURAS_DE_DADOS_COMPACTAS_BP
@@ -15,5 +16,6 @@ void dfs_bt2(vector<int>& V, Tree::Node* node);
 void dfs_bt(bitVector* B, Tree::Node* root);
 void dfs_gt(bitVector* B, Gtree::gNode* root);
 void bp_build(vector<char>& B, Gtree::gNode* node);
+unsigned long long excess(bitVector* B, unsigned long long i);
 
 #endif

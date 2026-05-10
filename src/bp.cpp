@@ -3,6 +3,7 @@
 #include "bp.h"
 #include "general_tree.h"
 #include <vector>
+#include <stdio.h>
 
 #define ULI unsigned long int
 
@@ -67,3 +68,9 @@ void bp_build(vector<char>& B, Gtree::gNode* node){
 	}	
 }
 
+// The number of opening minus closing parenthesis in B[1,i]
+// undefined behavor for out of bounds i value or if the bitvector is not a BP
+unsigned long long excess(bitVector* B, unsigned long long i)
+{
+    return 2 * B->naive_rank1(i) - i;
+}

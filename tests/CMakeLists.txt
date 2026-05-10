@@ -51,3 +51,11 @@ target_link_libraries(ll2-tester utils)
 # )
 # 
 # target_link_libraries(utils-tester libgpt compact)
+
+
+add_executable(balanced_parenthesis-tester
+    balanced_parenthesis-tester.cpp
+)
+
+target_link_libraries(balanced_parenthesis-tester compact)
+add_test(NAME TestBalancedParenthesis COMMAND balanced_parenthesis-tester)
