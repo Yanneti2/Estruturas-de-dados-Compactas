@@ -28,22 +28,8 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
         } else {
             end = middle;
         }
-
-        // if (V[middle] > target) {
-        //     end = middle - 1;
-        // } else if (V[middle] < target) {
-        //     beginning = middle + 1;
-        // } else {
-        //     return middle - 1;
-        // }
-        // if (end < beginning) {
-        //     return end;
-        // }
     }
 }
-
-// 1 6 7 9 12 19
-
 
 template <typename T>
 unsigned long long binary_search(T *V, T target, unsigned long long beginning, unsigned long long end, unsigned long long factor) {
@@ -65,8 +51,6 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
 
 template <typename T>
 unsigned long long binary_search(T *V, T target, unsigned long long beginning, unsigned long long end, unsigned long long factor1, unsigned long long factor2) {
-    // 47, 10, 20, 9, 46
-    // 0   8   12   17   19   21   25   30   33   40
     factor2 = beginning;
     if (end == beginning) {
         return end;
@@ -75,9 +59,6 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
         if (end == beginning) {
             return end - 1;
         }
-        //135 - 46 - 21 = 68 ==> 10, 15, 12
-        //108 - 46 - 12 = 50 ==> 10, 12, 11
-        //99  - 46 -  8 = 45 ==> 12, 12, 12
         unsigned long long middle = (beginning + end) / 2;
         if (factor1 * (middle - factor2) - V[middle] < target) {
             beginning = middle + 1;
@@ -87,8 +68,7 @@ unsigned long long binary_search(T *V, T target, unsigned long long beginning, u
     }
 }
 
-JacobsonRank::JacobsonRank(){   
-}
+JacobsonRank::JacobsonRank() {}
 
 // g++ -D _nbits, _log, _nbits512
 JacobsonRank::JacobsonRank(bitVector *B) {
@@ -102,22 +82,20 @@ JacobsonRank::JacobsonRank(bitVector *B) {
     #ifdef _nbits
     chunk1_size = NBITS * NBITS;
     chunk2_size = NBITS;
-    #endif
-     
-    #ifdef _log
+
+    #elifdef _nbits512
+    chunk1_size = 512 * NBITS;
+    chunk2_size = NBITS;
+
+    #else
     const long double logN = log2((long double)B_length);
     chunk1_size = ceil(logN) * floor(logN);
     chunk2_size = chunk1_size / ceil(logN);
     #endif
 
-    #ifdef _nbits512
-    chunk1_size = 512 * NBITS;
-    chunk2_size = NBITS;
-    #endif
-
     layer1_size = (B_length + chunk1_size - 1) / chunk1_size + 1;
-    chunk2_per_chunk1 = (chunk1_size + chunk2_size - 1) / chunk2_size;
-    layer2_size = chunk2_per_chunk1 * layer1_size;
+    chunk2_per_chunk1 = chunk1_size / chunk2_size;
+    layer2_size = chunk2_per_chunk1 * (layer1_size - 1);
 
     this->chunk1_size = chunk1_size;
     this->chunk2_size = chunk2_size;
