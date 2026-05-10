@@ -2,6 +2,7 @@
 #include "bitvector.h"
 #include "bp.h"
 #include "general_tree.h"
+#include "huffman.h"
 #include <vector>
 #include <stdio.h>
 
@@ -69,8 +70,31 @@ void bp_build(vector<char>& B, Gtree::gNode* node){
 }
 
 // The number of opening minus closing parenthesis in B[1,i]
-// undefined behavor for out of bounds i value or if the bitvector is not a BP
+// undefined behavior for out of bounds i value or if the bitvector is not a BP
 unsigned long long excess(bitVector* B, unsigned long long i)
 {
     return 2 * B->naive_rank1(i) - i;
+}
+
+
+// Searches for the greatest j < i | excess(B, j) == excess(B,i) + d
+// if not found, returns 0 (should i change this behavior?)
+unsigned long long backward_search(bitVector* B, unsigned long long i, unsigned long long d)
+{
+    if (i == 0)
+    {
+        return 0;
+    }
+
+    unsigned long long target_depth = excess(B, i) + d;
+
+    for (unsigned long long j = i - 1; j > 0; j--)
+    {
+        if(excess(B,j) == target_depth)
+        {
+            return j;
+        }
+    }
+
+    return 0;
 }
