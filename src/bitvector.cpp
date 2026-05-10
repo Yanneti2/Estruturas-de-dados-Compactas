@@ -329,10 +329,10 @@ unsigned long bitVector::popcount(){
 unsigned long bitVector::naive_rank1(unsigned long long i){
     unsigned pop_count = 0;
     unsigned long j;
-    for(j = 0; j < (i - 1)/NBITS; j++){
+    for(j = 0; j < i / NBITS; j++){
         //unsigned pop_count = std::__popcount(B->accessWord(chunk2, chunk2_size) & ~bitMask(i % chunk2_size));
         // & ~bitMask(i%B->size())
-        pop_count += std::__popcount(accessWord(i));
+        pop_count += std::__popcount(accessWord(j));
     }
     // pop_count += std::__popcount(accessWord(_size - i));
     pop_count += std::__popcount(accessWord(j) & ~bitMask(i % NBITS));
