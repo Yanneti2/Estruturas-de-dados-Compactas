@@ -8,6 +8,8 @@
     Uma funcao para appendar um long e/ou uma string a um bitvector.
 */
 
+#include <stack>
+#include <string>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,6 +83,57 @@ bitVector::bitVector() {
 
     if (!A)
         throw new bad_alloc();
+}
+
+bitVector::bitVector(string s) {
+	
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    _cap = (s.size() + NBITS -1) / NBITS;
+    _cap = (_cap == 0) ? 1 : _cap;
+    _size = s.size();
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+
+    if(!A) throw new bad_alloc();
+
+    for(unsigned long i = 0; i < s.size();i++){
+	    if(s[i]=='0')this->set0(i);
+	    else if(s[i]=='1')this->set1(i);
+    }
+}
+
+bitVector::bitVector(long int num) {
+
+    assert(sizeof(TYPE) * 8 == NBITS);
+
+    if(num <= 0){
+	_cap = 1;
+	_size = 0;
+    } else {
+   	_size = floor(log10(num) + 1); 
+	_cap = (_size + NBITS -1)/NBITS;
+	_cap = (_cap == 0) ? 1 : _cap;
+    }
+
+    A = (TYPE*) calloc(_cap, sizeof(TYPE));
+    if(!A) throw new bad_alloc();
+
+    if(_size!=0){
+	    stack<int> res; 
+
+	    for(unsigned long i = 0; i < _size; i++){
+		    int aux = num % 10;
+		    num /= 10;
+		    res.push(aux);
+	    }
+	    for(unsigned long j = 0; j < _size;j++){
+		    int temp = res.top();
+		    if(temp==0)this->set0(j);
+		    else if(temp==1)this->set1(j);
+		    res.pop();
+	    }
+    } 
 }
 
 bitVector::bitVector(unsigned long size) {
