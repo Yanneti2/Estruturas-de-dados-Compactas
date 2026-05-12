@@ -79,8 +79,17 @@ unsigned long long excess(bitVector* B, unsigned long long i)
 // returns true if bp and false if not bp 
 bool is_bp(bitVector& B){
 	unsigned long size = B.size();
-	if(size <= 0) return false;
-	if(B[size-1]==0 && excess(&B,size-1)==1) return true;
+	if(size <= 0 || B[0]==0 || size % 2 != 0) return false;
+	if(B[size-1]==0 && excess(&B,size-1)==1){
+		unsigned long select0 = 0;
+		unsigned long select1 = 0;
+		for(unsigned long i = 0; i < size; i++){
+			if(B[i]==0)select0+=1;
+			else if(B[i]==1)select1+=1;
+			if(select0 > select1)return false;	
+		}	
+		return true;
+	}
        	return false;	
 }
 

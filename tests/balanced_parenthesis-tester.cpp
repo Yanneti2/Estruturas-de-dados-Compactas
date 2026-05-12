@@ -94,6 +94,34 @@ int main(int argc, char *argv[])
     bitVector B5 = bitVector();
     assert(!is_bp(B5));
 
+    // B6 == ())(() == 100110
+    string arantes = "100110";
+    bitVector B6 = bitVector(arantes);
+    assert(!is_bp(B6));
+
+    // B7 == )))))((((( == 0000011111
+    string arantes2 = "0000011111";
+    bitVector B7 = bitVector(arantes2);
+    assert(!is_bp(B7));
+
+    // B8 == ((()())((((()()()))())((()(())()())))()) 
+    string a = "1110100111110101000100111011001010000100";
+    bitVector B8 = bitVector(a);
+    assert(is_bp(B8));
+
+    // B9 == () == 10
+    bitVector B9 = bitVector();
+    B9.append1();
+    B9.append0();
+    assert(is_bp(B9));
+
+    // B10 == ((( == 111
+    bitVector B10 = bitVector();
+    B10.append1();
+    B10.append1();
+    B10.append1();
+    assert(!is_bp(B10));
+
     // Checking if our implementation matches the expected hand-crafted excess
     // values array
     for (unsigned long long i = 0; i < size; i++) 
@@ -127,6 +155,15 @@ int main(int argc, char *argv[])
     //---------------------------
     //    Enclose Operation    |
     //---------------------------
+
+    // 1110100111110101000100111011001010000100 Original bitVector
+    //
+    // ((()())((((()()()))())((()(())()())))()) Parenthesis Analogy
+    //
+    // 0123456789012345678901234567890123456789 indexing
+    //           1         2         3          dozen 
+    //
+    // encloses(23) == 8
 
     bitVector* BV = new bitVector();
     BV->append1();
