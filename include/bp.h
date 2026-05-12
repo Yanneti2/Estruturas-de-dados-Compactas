@@ -17,5 +17,6 @@ void dfs_bt(bitVector* B, Tree::Node* root);
 void dfs_gt(bitVector* B, Gtree::gNode* root);
 void bp_build(vector<char>& B, Gtree::gNode* node);
 unsigned long long excess(bitVector* B, unsigned long long i);
+bool is_bp(bitVector* B);
 unsigned long long backward_search(bitVector* B, unsigned long long i, unsigned long long d);
 #endif

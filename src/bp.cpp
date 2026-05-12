@@ -1,8 +1,8 @@
-#include "binary_tree.h"
-#include "bitvector.h"
-#include "bp.h"
-#include "general_tree.h"
-#include "huffman.h"
+#include "../include/binary_tree.h"
+#include "../include/bitvector.h"
+#include "../include/bp.h"
+#include "../include/general_tree.h"
+#include "../include/huffman.h"
 #include <vector>
 #include <stdio.h>
 
@@ -76,6 +76,12 @@ unsigned long long excess(bitVector* B, unsigned long long i)
     return 2 * B->naive_rank1(i) - i;
 }
 
+// returns true if bp and false if not bp 
+bool is_bp(bitVector* B){
+	if(B->size() <= 0) return false;
+	if (B[B->size() - 1] == 0 && excess(B,B->size() - 1) == 1) return true;
+       	return false;	
+}
 
 // Searches for the greatest j < i | excess(B, j) == excess(B,i) + d
 // if not found, returns 0 (should i change this behavior?)
