@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib> //rand() & 1
 #include <string>
+
 using namespace std;
 
 int main(void){
@@ -100,5 +101,4 @@ int main(void){
     long int b = 11010011101000;
     bitVector* integers = new bitVector(b);
     integers->print(); 
-
 }

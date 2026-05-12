@@ -1,7 +1,15 @@
+/* These operations consider the exclusive rank and select operations previously implemented. That being said, the enclose operation returns the k+1 position of the 0 indexed bitvector position of the starting of a segment that contains that i'th position.
+ * 
+ * These behaviour makes so that the enclosing of tha last position of the BV return 1, not 0.
+ *
+ * I suggest a remodel in this operations, comment that was made before my interview in this file, so that it returns the exact 0-indexed position of the bitVector.
+ */
+
 #include "../include/bp.h"
 #include "../include/bitvector.h"
 #include <cassert>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -55,41 +63,36 @@ int main(int argc, char *argv[])
     //---------------------------
 
     // B1 == ()()() == 101010
-    bitVector* B1 = new bitVector();
+    bitVector B1 = bitVector();
     for(int i = 0; i < 3; i++){
-	    B1->append1();
-	    B1->append0();
+	    B1.append1();
+	    B1.append0();
     }
-    if(is_bp(B1))cout<<"BP"<<endl;
-    else cout<<"Not BP"<<endl;
+    assert(is_bp(B1));
 
     // B2 = ((())) == 111000
-    bitVector* B2 = new bitVector();
-    for(int i = 0; i < 3; i++)B2->append1();
-    for(int i = 0; i < 3; i++)B2->append0();
-    if(is_bp(B2))cout<<"BP"<<endl;
-    else cout<<"Not BP"<<endl;
+    bitVector B2 = bitVector();
+    for(int i = 0; i < 3; i++)B2.append1();
+    for(int i = 0; i < 3; i++)B2.append0();
+    assert(is_bp(B2));
 
     // B3 = (()()() == 1101010
-    bitVector* B3 = new bitVector();
-    B3->append1();
+    bitVector B3 = bitVector();
+    B3.append1();
     for(int i = 0; i < 3; i++){
-	    B3->append1();
-	    B3->append0();
+	    B3.append1();
+	    B3.append0();
     }
-    if(is_bp(B3))cout<<"BP"<<endl;
-    else cout<<"Not BP"<<endl;
+    assert(!is_bp(B3));
 
     // B4 == ) == 0
-    bitVector* B4 = new bitVector();
-    B4->append0();
-    if(is_bp(B4))cout<<"BP"<<endl;
-    else cout<<"Not BP"<<endl;
+    bitVector B4 = bitVector();
+    B4.append0();
+    assert(!is_bp(B4));
 
     // B5 = empty
-    bitVector*B5 = new bitVector();
-    if(is_bp(B5))cout<<"BP"<<endl;
-    else cout<<"Not BP"<<endl;
+    bitVector B5 = bitVector();
+    assert(!is_bp(B5));
 
     // Checking if our implementation matches the expected hand-crafted excess
     // values array
@@ -121,5 +124,35 @@ int main(int argc, char *argv[])
     // i=16: excess=2, target=20 (impossible as excess(i) <= i) so expected result=0 (sentinel)
     assert(backward_search(&B, 16, 18) == 0);
 
+    //---------------------------
+    //    Enclose Operation    |
+    //---------------------------
+
+    bitVector* BV = new bitVector();
+    BV->append1();
+    BV->append1();
+    BV->append0();
+    BV->append1();
+    BV->append0();
+    BV->append0();
+    BV->append1();
+    BV->append1();
+    BV->append1();
+    BV->append0();
+    BV->append1();
+    BV->append0();
+    BV->append0();
+    BV->append0();
+
+    assert(enclose(BV,8) == 7);
+    assert(enclose(BV,11) == 8);
+    assert(enclose(BV,13) == 1);
+    assert(enclose(BV,9) == 8);
+
+    string navarro = "1110100111110101000100111011001010000100";
+    bitVector* gonzalo = new bitVector(navarro);
+
+    assert(enclose(gonzalo,23) == 8);
+    
     return 0;
 }

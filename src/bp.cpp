@@ -77,9 +77,10 @@ unsigned long long excess(bitVector* B, unsigned long long i)
 }
 
 // returns true if bp and false if not bp 
-bool is_bp(bitVector* B){
-	if(B->size() <= 0) return false;
-	if (B[B->size() - 1] == 0 && excess(B,B->size() - 1) == 1) return true;
+bool is_bp(bitVector& B){
+	unsigned long size = B.size();
+	if(size <= 0) return false;
+	if(B[size-1]==0 && excess(&B,size-1)==1) return true;
        	return false;	
 }
 
@@ -103,4 +104,9 @@ unsigned long long backward_search(bitVector* B, unsigned long long i, unsigned 
     }
 
     return 0;
+}
+
+// returns the rightmost position k, k < i and 1-indexed, of the closest k'th segment that contains the position i
+unsigned long long enclose(bitVector* B, unsigned long long i){
+	return backward_search(B,i,-2) + 1;
 }
