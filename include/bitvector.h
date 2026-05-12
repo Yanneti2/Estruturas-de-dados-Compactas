@@ -41,6 +41,8 @@ public:
     bitVector(unsigned long size, int init);
     bitVector(unsigned long size, bool (*fn)(unsigned long));
     ~bitVector();
+    bitVector deserialize(const char* path);
+    void serialize(const char* path);
 
     void append0();
     void append1();
