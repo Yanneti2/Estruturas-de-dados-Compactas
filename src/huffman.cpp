@@ -7,9 +7,9 @@
  * Shannon Entropy: average lenght of the codes of a univer U, such that u E U and Pr(u) is known;
  */
 
-#include "../include/binary_tree.h"
-#include "../include/bitvector.h"
-#include "../include/huffman.h"
+#include "binary_tree.h"
+#include "bitvector.h"
+#include "huffman.h"
 #include <bits/stdc++.h>
 #include <iostream>
 #include <string>
