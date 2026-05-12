@@ -2,6 +2,8 @@
 // #include "utils.h"
 #include <iostream>
 #include <cstdlib> //rand() & 1
+#include <string>
+
 using namespace std;
 
 int main(void){
@@ -91,4 +93,12 @@ int main(void){
     BV.put(BV2, 4);
     std::cout << "BV2 putted into [4] of BV:" << std::endl;
     BV.print();
+
+    string s = "11010011101000";
+    bitVector* string = new bitVector(s);
+    string->print();
+
+    long int b = 11010011101000;
+    bitVector* integers = new bitVector(b);
+    integers->print(); 
 }

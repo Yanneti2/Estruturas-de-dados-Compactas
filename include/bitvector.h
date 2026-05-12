@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <string>
 #include "jacobsonrank.h"
 
 #ifndef BITVECTOR
@@ -40,6 +41,8 @@ public:
     bitVector(unsigned long size);
     bitVector(unsigned long size, int init);
     bitVector(unsigned long size, bool (*fn)(unsigned long));
+    bitVector(string s);
+    bitVector(long int num);
     ~bitVector();
     bitVector deserialize(const char* path);
     void serialize(const char* path);

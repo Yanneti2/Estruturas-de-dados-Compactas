@@ -1,8 +1,8 @@
-#include "binary_tree.h"
-#include "bitvector.h"
-#include "bp.h"
-#include "general_tree.h"
-#include "huffman.h"
+#include "../include/binary_tree.h"
+#include "../include/bitvector.h"
+#include "../include/bp.h"
+#include "../include/general_tree.h"
+#include "../include/huffman.h"
 #include <vector>
 #include <stdio.h>
 
@@ -76,6 +76,22 @@ unsigned long long excess(bitVector* B, unsigned long long i)
     return 2 * B->naive_rank1(i) - i;
 }
 
+// returns true if bp and false if not bp 
+bool is_bp(bitVector& B){
+	unsigned long size = B.size();
+	if(size <= 0 || B[0]==0 || size % 2 != 0) return false;
+	if(B[size-1]==0 && excess(&B,size-1)==1){
+		unsigned long select0 = 0;
+		unsigned long select1 = 0;
+		for(unsigned long i = 0; i < size; i++){
+			if(B[i]==0)select0+=1;
+			else if(B[i]==1)select1+=1;
+			if(select0 > select1)return false;	
+		}	
+		return true;
+	}
+       	return false;	
+}
 
 // Searches for the greatest j < i | excess(B, j) == excess(B,i) + d
 // if not found, returns 0 (should i change this behavior?)
@@ -97,4 +113,9 @@ unsigned long long backward_search(bitVector* B, unsigned long long i, unsigned 
     }
 
     return 0;
+}
+
+// returns the rightmost position k, k < i and 1-indexed, of the closest k'th segment that contains the position i
+unsigned long long enclose(bitVector* B, unsigned long long i){
+	return backward_search(B,i,-2) + 1;
 }
