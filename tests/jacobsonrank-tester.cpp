@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
                 B1.select1(index);
                 end = std::chrono::high_resolution_clock::now();
             }
-
+		
             times.push_back((end - start).count());
         }
 

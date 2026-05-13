@@ -9,7 +9,8 @@
 int main(void) {
     srand(time(0));
     cout << "\"Size\";\"Time\"\n";
-    for (long long unsigned size = 1000; size < 10000; size *= 10) {
+    long double ns_time = 0;
+    for (unsigned long long size = 1000; size < 10000000000; size *= 10) {
         bitVector B = bitVector();
         int order = log10(size);
         // cout << "Order: " << order << endl;
@@ -21,19 +22,16 @@ int main(void) {
                 B.append0();
             }
         }
-        
-
-        auto start = std::chrono::high_resolution_clock::now();
         RRR R(&B);
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::nano> ns_time = (end - start);
-        unsigned long long index = rand() % B.size();
-        start = std::chrono::high_resolution_clock::now();
-        R.rank1(index);
-        end = std::chrono::high_resolution_clock::now();
-        ns_time = end - start;
-        cout << size << ";" << ns_time.count() << "\n";
         
-        
+        for(auto j = 0; j < 1000000; j++){
+            unsigned long long index = rand() % B.size();
+            auto start = std::chrono::high_resolution_clock::now();
+            R.rank1(index);
+            auto end = std::chrono::high_resolution_clock::now();
+            ns_time += (end - start).count();
+        }
+        std::cout << size << ";" << (ns_time/(long double)1000000) << "\n";
     }
 }
+
