@@ -126,6 +126,6 @@ unsigned long long open(bitVector* B, unsigned long long i) {
 }
 
 // returns the rightmost position k, k < i and 1-indexed, of the closest k'th segment that contains the position i
-unsigned long long enclose(bitVector* B, unsigned long long i){
-	return backward_search(B,i,-2) + 1;
+unsigned long long enclose(bitVector* B, unsigned long long i) {
+    return backward_search(B, i, -1);
 }
