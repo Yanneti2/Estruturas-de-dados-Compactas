@@ -44,6 +44,8 @@ public:
     bitVector(string s);
     bitVector(long int num);
     ~bitVector();
+    bitVector deserialize(const char* path);
+    void serialize(const char* path);
 
     void append0();
     void append1();

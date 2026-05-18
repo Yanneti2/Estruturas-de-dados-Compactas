@@ -448,4 +448,35 @@ unsigned long bitVector::naive_select0(unsigned long long i){
     }
     return -1;
 }
+
+void bitVector::serialize(const char* path) {
+    
+    FILE* arch = fopen(path, "wb");
+    string s;
+    for(size_t i = 0; i < size(); i++) {
+        if((*this)[i]) s += "1";
+        else s += '0';
+    }
+    if (arch) {
+        fprintf(arch,"%s", s.data());
+        fclose(arch);
+        return;}
+        
+}
+
+bitVector bitVector::deserialize(const char* path){
+    FILE* arch = fopen(path, "r");
+    bitVector* bv = new bitVector();
+    char* s = new char[size()];
+    if (arch) {
+        fgets(s,size() + 1,arch);
+        for(int i = 0; i < size(); i++) {
+            if (s[i] == '1') bv->append1();
+            else bv->append0();
+        }
+    }
+    else cout << "Arquivo sem conteúdo.";
+    return *bv;
+}
+
 #undef bitMask
