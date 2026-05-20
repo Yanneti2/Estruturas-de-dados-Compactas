@@ -1,4 +1,4 @@
-# Compact-Data-Structures
+# Compact-Data-Structures-Library
 
 With the growing volume of data processed in our daily lives, there is a need to analyze data structures that are satisfactory in the compressibility-accessibility trade-off and capable of simultaneously using as little memory as possible while being efficient in terms of processing time.
 
